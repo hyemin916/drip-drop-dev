@@ -24,7 +24,8 @@ async function getPosts(category?: string, page = 1, limit = 10): Promise<PostSu
       return [];
     }
 
-    return res.json();
+    const data = await res.json();
+    return data.posts || [];
   } catch (error) {
     console.error('Error fetching posts:', error);
     return [];
