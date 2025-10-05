@@ -364,28 +364,28 @@
 
 ### Public Pages
 
-- [ ] **T047** Create root layout with Header and global styles
+- [x] **T047** Create root layout with Header and global styles
   - Create `src/app/layout.tsx`
   - Include Header component, apply Tailwind globals.css
   - Set metadata: title "Drip Drop Dev", description, favicon
   - Depends on: T041 (Header)
   - File: `src/app/layout.tsx`
 
-- [ ] **T048** Create homepage (post list with category filter)
+- [x] **T048** Create homepage (post list with category filter)
   - Create `src/app/page.tsx`
   - Fetch posts from API, render PostCard grid, CategoryFilter
   - Implement pagination, handle category query parameter
   - Depends on: T042 (PostCard), T043 (CategoryFilter)
   - File: `src/app/page.tsx`
 
-- [ ] **T049** Create post detail page ([slug])
+- [x] **T049** Create post detail page ([slug])
   - Create `src/app/posts/[slug]/page.tsx`
   - Fetch post by slug, render PostContent with metadata
   - Use `generateStaticParams` for SSG, `revalidate: 60` for ISR
   - Depends on: T044 (PostContent)
   - File: `src/app/posts/[slug]/page.tsx`
 
-- [ ] **T050** Create About Me page
+- [x] **T050** Create About Me page
   - Create `src/app/about/page.tsx`
   - Fetch About Me content from API, render with PostContent
   - Depends on: T044 (PostContent)
@@ -393,20 +393,20 @@
 
 ### Admin Pages (Protected)
 
-- [ ] **T051** Create admin post creation page
+- [x] **T051** Create admin post creation page
   - Create `src/app/admin/posts/new/page.tsx`
   - Render MarkdownEditor, handle form submission to POST /api/posts
   - Redirect to `/posts/[slug]` on success
   - Depends on: T045 (MarkdownEditor), T046 (ImageUploader)
   - File: `src/app/admin/posts/new/page.tsx`
 
-- [ ] **T052** Create admin post edit page
+- [x] **T052** Create admin post edit page
   - Create `src/app/admin/posts/[slug]/edit/page.tsx`
   - Fetch existing post, populate MarkdownEditor, submit to PUT /api/posts/[slug]
   - Depends on: T045 (MarkdownEditor)
   - File: `src/app/admin/posts/[slug]/edit/page.tsx`
 
-- [ ] **T053** Create admin About Me edit page
+- [x] **T053** Create admin About Me edit page
   - Create `src/app/admin/about/edit/page.tsx`
   - Fetch About Me content, render MarkdownEditor, submit to PUT /api/about
   - Depends on: T045 (MarkdownEditor)

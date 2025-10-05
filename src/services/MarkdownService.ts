@@ -1,6 +1,5 @@
 import matter from 'gray-matter';
 import { promises as fs } from 'fs';
-import path from 'path';
 
 export interface FrontmatterData {
   title: string;

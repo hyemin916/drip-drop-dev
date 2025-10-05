@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { CATEGORIES, Category } from '@/models/Category';
+import { CATEGORIES } from '@/models/Category';
 
 const ALL_CATEGORY = '전체';
 
@@ -20,10 +20,6 @@ export default function CategoryFilter() {
     }
 
     router.push(`/?${params.toString()}`);
-  };
-
-  const isActive = (categorySlug: string | null) => {
-    return currentCategory === categorySlug;
   };
 
   return (

@@ -10,6 +10,9 @@ const config: Config = {
     extend: {
       colors: {
         drip: {
+          light: '#E0F7FA',
+          DEFAULT: '#00BCD4',
+          dark: '#0097A7',
           50: '#e6f7ff',
           100: '#bae7ff',
           200: '#91d5ff',

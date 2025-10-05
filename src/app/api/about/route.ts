@@ -4,7 +4,7 @@ import { AuthService } from '@/services/AuthService';
 import { AboutMeUpdateSchema } from '@/models/AboutMe';
 
 // GET /api/about - Get About Me content
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const aboutMe = await AboutMeService.getAboutMe();
 
