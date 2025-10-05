@@ -98,16 +98,55 @@ curl -X POST http://localhost:3000/api/auth/login \
 └── public/               # Static assets
 ```
 
+## Creating Content
+
+### Writing a New Post
+
+Create a new Markdown file in `content/posts/` with the filename format: `YYYY-MM-DD-slug.md`
+
+```markdown
+---
+title: "Your Post Title"
+slug: "your-post-slug"
+excerpt: "Brief summary (max 200 chars)"
+category: "개발"  # or "일상"
+publishedAt: "2025-10-05T10:00:00Z"
+author: "Your Name"
+thumbnail: "/images/custom-thumbnail.png"  # optional
+---
+
+# Your Post Content
+
+Write your content here using Markdown syntax...
+
+![Image Alt Text](/images/your-image.png "Optional caption")
+```
+
+### Editing About Me
+
+Edit `content/about/me.md`:
+
+```markdown
+---
+updatedAt: "2025-10-05T10:00:00Z"
+author: "Your Name"
+---
+
+# About Me
+
+Your about me content in Markdown...
+```
+
 ## Available Scripts
 
-- `npm run dev` - Start development server
+- `npm run dev` - Start development server (http://localhost:3000)
 - `npm run build` - Build for production
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
 - `npm run format` - Format code with Prettier
 - `npm test` - Run unit tests
 - `npm run test:coverage` - Run tests with coverage
-- `npm run test:e2e` - Run E2E tests
+- `npm run test:e2e` - Run E2E tests with Playwright
 
 ## Deployment
 

@@ -494,7 +494,7 @@
   - Verify bundle size <200KB gzipped (run `npm run build` and analyze)
   - File: Components with dynamic imports
 
-- [ ] **T068** Create sample content for testing
+- [x] **T068** Create sample content for testing
   - Create 3 sample posts in `content/posts/` (2 개발, 1 일상)
   - Create `content/about/me.md` with sample bio
   - Add sample images to `content/images/uploads/`
@@ -502,12 +502,12 @@
 
 ### Documentation
 
-- [ ] **T069** [P] Update README.md with setup instructions
+- [x] **T069** [P] Update README.md with setup instructions
   - Document: installation, env variables, running dev server, building for production
   - Include quickstart guide, deployment instructions (Vercel)
   - File: `README.md`
 
-- [ ] **T070** [P] Create deployment guide
+- [x] **T070** [P] Create deployment guide
   - Document Vercel deployment: connect repo, set env vars, configure domains
   - Document performance monitoring setup
   - File: `docs/DEPLOYMENT.md`
