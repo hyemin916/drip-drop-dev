@@ -1,0 +1,367 @@
+openapi: 3.1.0
+info:
+  title: Drip Drop Dev - Posts API
+  version: 1.0.0
+  description: API endpoints for managing blog posts
+
+servers:
+  - url: http://localhost:3000
+    description: Local development
+  - url: https://dripdrop.dev
+    description: Production
+
+paths:
+  /api/posts:
+    get:
+      summary: List all posts
+      description: Retrieve paginated list of published posts, optionally filtered by category
+      tags:
+        - Posts
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 50
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: ["일상", "개발"]
+      responses:
+        '200':
+          description: List of posts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  posts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PostSummary'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+    post:
+      summary: Create new post
+      description: Create a new blog post (requires authentication)
+      tags:
+        - Posts
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostCreate'
+      responses:
+        '201':
+          description: Post created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /api/posts/{slug}:
+    get:
+      summary: Get post by slug
+      description: Retrieve full post content by URL slug
+      tags:
+        - Posts
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-z0-9-]+$'
+      responses:
+        '200':
+          description: Post details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      summary: Update existing post
+      description: Update post content, metadata, or thumbnail (requires authentication)
+      tags:
+        - Posts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostUpdate'
+      responses:
+        '200':
+          description: Post updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+    delete:
+      summary: Delete post
+      description: Permanently delete a post (requires authentication)
+      tags:
+        - Posts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Post deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Environment-based authentication token (ADMIN_SECRET)
+
+  schemas:
+    PostSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        slug:
+          type: string
+        excerpt:
+          type: string
+        category:
+          type: string
+          enum: ["일상", "개발"]
+        publishedAt:
+          type: string
+          format: date-time
+        thumbnail:
+          $ref: '#/components/schemas/Image'
+      required:
+        - id
+        - title
+        - slug
+        - excerpt
+        - category
+        - publishedAt
+
+    Post:
+      allOf:
+        - $ref: '#/components/schemas/PostSummary'
+        - type: object
+          properties:
+            content:
+              type: string
+              description: Full Markdown content
+            updatedAt:
+              type: string
+              format: date-time
+              nullable: true
+            images:
+              type: array
+              items:
+                $ref: '#/components/schemas/Image'
+            author:
+              type: string
+          required:
+            - content
+            - images
+            - author
+
+    PostCreate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        slug:
+          type: string
+          pattern: '^[a-z0-9-]+$'
+        content:
+          type: string
+          maxLength: 50000
+        excerpt:
+          type: string
+          maxLength: 200
+        category:
+          type: string
+          enum: ["일상", "개발"]
+        thumbnail:
+          type: string
+          format: uri
+          nullable: true
+          description: Custom thumbnail URL override
+      required:
+        - title
+        - slug
+        - content
+        - excerpt
+        - category
+
+    PostUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        content:
+          type: string
+          maxLength: 50000
+        excerpt:
+          type: string
+          maxLength: 200
+        category:
+          type: string
+          enum: ["일상", "개발"]
+        thumbnail:
+          type: string
+          format: uri
+          nullable: true
+      minProperties: 1
+
+    Image:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+          format: uri
+        alt:
+          type: string
+          minLength: 1
+          maxLength: 200
+        caption:
+          type: string
+          maxLength: 500
+          nullable: true
+        width:
+          type: integer
+          minimum: 1
+        height:
+          type: integer
+          minimum: 1
+        format:
+          type: string
+          enum: ["webp", "png", "jpeg", "gif"]
+      required:
+        - id
+        - url
+        - alt
+        - width
+        - height
+        - format
+
+    Pagination:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of posts
+        page:
+          type: integer
+          description: Current page number
+        limit:
+          type: integer
+          description: Posts per page
+        totalPages:
+          type: integer
+          description: Total number of pages
+      required:
+        - total
+        - page
+        - limit
+        - totalPages
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        code:
+          type: string
+          description: Error code
+        details:
+          type: object
+          description: Additional error details
+      required:
+        - error
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Unauthorized"
+            code: "AUTH_REQUIRED"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Post not found"
+            code: "NOT_FOUND"
+
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Validation failed"
+            code: "VALIDATION_ERROR"
+            details:
+              title: "Title is required"

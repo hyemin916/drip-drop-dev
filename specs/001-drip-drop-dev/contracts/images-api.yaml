@@ -1,0 +1,187 @@
+openapi: 3.1.0
+info:
+  title: Drip Drop Dev - Images API
+  version: 1.0.0
+  description: API endpoints for uploading and managing images
+
+servers:
+  - url: http://localhost:3000
+    description: Local development
+  - url: https://dripdrop.dev
+    description: Production
+
+paths:
+  /api/images/upload:
+    post:
+      summary: Upload image
+      description: Upload an image file for use in posts (requires authentication)
+      tags:
+        - Images
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Image file (max 5MB)
+                alt:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                  description: Alternative text for accessibility
+                caption:
+                  type: string
+                  maxLength: 500
+                  nullable: true
+                  description: Optional caption
+              required:
+                - file
+                - alt
+      responses:
+        '201':
+          description: Image uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageUploadResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Environment-based authentication token (ADMIN_SECRET)
+
+  schemas:
+    ImageUploadResponse:
+      type: object
+      properties:
+        image:
+          $ref: '#/components/schemas/Image'
+        message:
+          type: string
+          example: "Image uploaded successfully"
+      required:
+        - image
+        - message
+
+    Image:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier (filename hash)
+        url:
+          type: string
+          format: uri
+          description: Public URL path
+        alt:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Alternative text
+        caption:
+          type: string
+          maxLength: 500
+          nullable: true
+          description: Optional caption
+        width:
+          type: integer
+          minimum: 1
+          description: Width in pixels
+        height:
+          type: integer
+          minimum: 1
+          description: Height in pixels
+        format:
+          type: string
+          enum: ["webp", "png", "jpeg", "gif"]
+          description: Image format
+        fileSize:
+          type: integer
+          description: File size in bytes
+        uploadedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - url
+        - alt
+        - width
+        - height
+        - format
+        - fileSize
+        - uploadedAt
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        code:
+          type: string
+          description: Error code
+        details:
+          type: object
+          description: Additional error details
+      required:
+        - error
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Unauthorized"
+            code: "AUTH_REQUIRED"
+
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            invalidFormat:
+              summary: Invalid file format
+              value:
+                error: "Invalid image format"
+                code: "VALIDATION_ERROR"
+                details:
+                  format: "Only webp, png, jpeg, gif formats are supported"
+            missingAlt:
+              summary: Missing alt text
+              value:
+                error: "Validation failed"
+                code: "VALIDATION_ERROR"
+                details:
+                  alt: "Alternative text is required for accessibility"
+
+    PayloadTooLarge:
+      description: File size exceeds limit
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "File too large"
+            code: "PAYLOAD_TOO_LARGE"
+            details:
+              maxSize: "5MB"
+              receivedSize: "7.2MB"

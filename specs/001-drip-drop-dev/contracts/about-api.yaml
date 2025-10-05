@@ -1,0 +1,140 @@
+openapi: 3.1.0
+info:
+  title: Drip Drop Dev - About Me API
+  version: 1.0.0
+  description: API endpoints for managing About Me page content
+
+servers:
+  - url: http://localhost:3000
+    description: Local development
+  - url: https://dripdrop.dev
+    description: Production
+
+paths:
+  /api/about:
+    get:
+      summary: Get About Me content
+      description: Retrieve the About Me page content
+      tags:
+        - About
+      responses:
+        '200':
+          description: About Me content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AboutMe'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      summary: Update About Me content
+      description: Update the About Me page content (requires authentication)
+      tags:
+        - About
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AboutMeUpdate'
+      responses:
+        '200':
+          description: About Me updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AboutMe'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Environment-based authentication token (ADMIN_SECRET)
+
+  schemas:
+    AboutMe:
+      type: object
+      properties:
+        id:
+          type: string
+          enum: ["about-me"]
+          description: Fixed identifier (singleton)
+        content:
+          type: string
+          description: Markdown content
+        updatedAt:
+          type: string
+          format: date-time
+        author:
+          type: string
+      required:
+        - id
+        - content
+        - updatedAt
+        - author
+
+    AboutMeUpdate:
+      type: object
+      properties:
+        content:
+          type: string
+          maxLength: 10000
+          description: Markdown content
+      required:
+        - content
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        code:
+          type: string
+          description: Error code
+        details:
+          type: object
+          description: Additional error details
+      required:
+        - error
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Unauthorized"
+            code: "AUTH_REQUIRED"
+
+    NotFound:
+      description: About Me content not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "About Me content not found"
+            code: "NOT_FOUND"
+
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Validation failed"
+            code: "VALIDATION_ERROR"
+            details:
+              content: "Content exceeds maximum length"
