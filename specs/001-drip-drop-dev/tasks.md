@@ -48,51 +48,51 @@
 
 ## Phase 3.1: Setup & Infrastructure
 
-- [ ] **T001** Initialize Next.js 14 project with TypeScript and App Router
+- [x] **T001** Initialize Next.js 14 project with TypeScript and App Router
   - Run `npx create-next-app@14 . --typescript --tailwind --app --use-npm`
   - Configure `next.config.js` for images, performance budgets
   - File: `package.json`, `next.config.js`, `tsconfig.json`
 
-- [ ] **T002** [P] Install core dependencies
+- [x] **T002** [P] Install core dependencies
   - `npm install gray-matter react-markdown remark-gfm rehype-highlight sharp zod`
   - `npm install -D vitest @vitejs/plugin-react @testing-library/react @testing-library/jest-dom`
   - File: `package.json`
 
-- [ ] **T003** [P] Install development and testing tools
+- [x] **T003** [P] Install development and testing tools
   - `npm install -D @playwright/test eslint-config-next prettier tailwindcss-accessible-colors`
   - `npm install -D @types/node @types/react @types/react-dom`
   - File: `package.json`
 
-- [ ] **T004** [P] Configure ESLint and Prettier
+- [x] **T004** [P] Configure ESLint and Prettier
   - Create `.eslintrc.json` with Next.js strict rules
   - Create `.prettierrc` with 2-space indentation, single quotes
   - Add `lint` and `format` scripts to package.json
   - Files: `.eslintrc.json`, `.prettierrc`
 
-- [ ] **T005** [P] Configure Vitest for unit testing
+- [x] **T005** [P] Configure Vitest for unit testing
   - Create `vitest.config.ts` with React plugin and coverage settings (≥80%)
   - Create `tests/setup.ts` for test utilities
   - Add `test` and `test:coverage` scripts
   - Files: `vitest.config.ts`, `tests/setup.ts`
 
-- [ ] **T006** [P] Configure Playwright for E2E testing
+- [x] **T006** [P] Configure Playwright for E2E testing
   - Run `npx playwright install`
   - Create `playwright.config.ts` with Chrome/Firefox/Safari browsers
   - Add `test:e2e` script
   - File: `playwright.config.ts`
 
-- [ ] **T007** [P] Configure Tailwind CSS with Drip Drop theme
+- [x] **T007** [P] Configure Tailwind CSS with Drip Drop theme
   - Edit `tailwind.config.ts`: add drip colors, accessible fonts, WCAG plugin
   - Create `src/app/globals.css` with base styles, focus rings
   - Files: `tailwind.config.ts`, `src/app/globals.css`
 
-- [ ] **T008** Create content directory structure
+- [x] **T008** Create content directory structure
   - `mkdir -p content/posts content/about content/images/uploads content/images/placeholders`
   - Create `public/images/thumbnails/` directory
   - Create placeholder SVG: `public/images/placeholders/default-thumbnail.png`
   - Files: Directory structure, placeholder image
 
-- [ ] **T009** [P] Set up environment variables
+- [x] **T009** [P] Set up environment variables
   - Create `.env.example` with `ADMIN_SECRET`, `OWNER_NAME`, `OWNER_EMAIL`
   - Add `.env.local` to `.gitignore`
   - Document auth setup in `README.md`
@@ -105,56 +105,56 @@
 
 ### Contract Tests (API Routes)
 
-- [ ] **T010** [P] Contract test: GET /api/posts (list all posts)
+- [x] **T010** [P] Contract test: GET /api/posts (list all posts)
   - Create `tests/contract/posts.get-list.test.ts`
   - Test: returns 200, array of PostSummary objects, pagination
   - Test: filters by category query parameter
   - Verify OpenAPI spec compliance (posts-api.yaml)
   - File: `tests/contract/posts.get-list.test.ts`
 
-- [ ] **T011** [P] Contract test: POST /api/posts (create post)
+- [x] **T011** [P] Contract test: POST /api/posts (create post)
   - Create `tests/contract/posts.post.test.ts`
   - Test: returns 201 with created Post, validates request schema
   - Test: returns 401 without auth, 400 for invalid data
   - Verify OpenAPI spec compliance
   - File: `tests/contract/posts.post.test.ts`
 
-- [ ] **T012** [P] Contract test: GET /api/posts/[slug] (get post by slug)
+- [x] **T012** [P] Contract test: GET /api/posts/[slug] (get post by slug)
   - Create `tests/contract/posts.get-by-slug.test.ts`
   - Test: returns 200 with full Post object
   - Test: returns 404 for non-existent slug
   - Verify OpenAPI spec compliance
   - File: `tests/contract/posts.get-by-slug.test.ts`
 
-- [ ] **T013** [P] Contract test: PUT /api/posts/[slug] (update post)
+- [x] **T013** [P] Contract test: PUT /api/posts/[slug] (update post)
   - Create `tests/contract/posts.put.test.ts`
   - Test: returns 200 with updated Post, validates request schema
   - Test: returns 401 without auth, 404 for non-existent slug
   - Verify OpenAPI spec compliance
   - File: `tests/contract/posts.put.test.ts`
 
-- [ ] **T014** [P] Contract test: DELETE /api/posts/[slug] (delete post)
+- [x] **T014** [P] Contract test: DELETE /api/posts/[slug] (delete post)
   - Create `tests/contract/posts.delete.test.ts`
   - Test: returns 204 on successful deletion
   - Test: returns 401 without auth, 404 for non-existent slug
   - Verify OpenAPI spec compliance
   - File: `tests/contract/posts.delete.test.ts`
 
-- [ ] **T015** [P] Contract test: GET /api/about (get About Me)
+- [x] **T015** [P] Contract test: GET /api/about (get About Me)
   - Create `tests/contract/about.get.test.ts`
   - Test: returns 200 with AboutMe object
   - Test: returns 404 if not exists
   - Verify OpenAPI spec compliance (about-api.yaml)
   - File: `tests/contract/about.get.test.ts`
 
-- [ ] **T016** [P] Contract test: PUT /api/about (update About Me)
+- [x] **T016** [P] Contract test: PUT /api/about (update About Me)
   - Create `tests/contract/about.put.test.ts`
   - Test: returns 200 with updated AboutMe
   - Test: returns 401 without auth, 400 for invalid content
   - Verify OpenAPI spec compliance
   - File: `tests/contract/about.put.test.ts`
 
-- [ ] **T017** [P] Contract test: POST /api/images/upload (upload image)
+- [x] **T017** [P] Contract test: POST /api/images/upload (upload image)
   - Create `tests/contract/images.upload.test.ts`
   - Test: returns 201 with Image object, validates multipart/form-data
   - Test: returns 401 without auth, 400 for invalid format, 413 for > 5MB
@@ -163,25 +163,25 @@
 
 ### Integration Tests (User Workflows)
 
-- [ ] **T018** [P] Integration test: Post lifecycle (create → read → update → delete)
+- [x] **T018** [P] Integration test: Post lifecycle (create → read → update → delete)
   - Create `tests/integration/post-lifecycle.test.ts`
   - Test complete CRUD flow with file system verification
   - Verify frontmatter parsing, Markdown content handling
   - File: `tests/integration/post-lifecycle.test.ts`
 
-- [ ] **T019** [P] Integration test: Category filtering
+- [x] **T019** [P] Integration test: Category filtering
   - Create `tests/integration/category-filtering.test.ts`
   - Test filtering posts by "일상" and "개발" categories
   - Verify category count calculation
   - File: `tests/integration/category-filtering.test.ts`
 
-- [ ] **T020** [P] Integration test: Image upload and thumbnail generation
+- [x] **T020** [P] Integration test: Image upload and thumbnail generation
   - Create `tests/integration/image-upload.test.ts`
   - Test image upload, Sharp processing, thumbnail generation
   - Verify auto-thumbnail selection and manual override
   - File: `tests/integration/image-upload.test.ts`
 
-- [ ] **T021** [P] Integration test: Markdown parsing with images and captions
+- [x] **T021** [P] Integration test: Markdown parsing with images and captions
   - Create `tests/integration/markdown-parsing.test.ts`
   - Test extracting images from Markdown with `![alt](url "caption")` syntax
   - Verify caption rendering, image metadata extraction
