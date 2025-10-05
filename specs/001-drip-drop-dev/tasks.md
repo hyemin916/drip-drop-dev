@@ -257,54 +257,54 @@
 
 ### API Routes
 
-- [ ] **T032** Implement GET /api/posts (list posts with pagination and filtering)
+- [x] **T032** Implement GET /api/posts (list posts with pagination and filtering)
   - Create `src/app/api/posts/route.ts`
   - Handle query params: `page`, `limit`, `category`
   - Return PostSummary[] with pagination metadata
   - Depends on: T028 (PostService)
   - File: `src/app/api/posts/route.ts`
 
-- [ ] **T033** Implement POST /api/posts (create new post)
+- [x] **T033** Implement POST /api/posts (create new post)
   - Add POST handler to `src/app/api/posts/route.ts`
   - Validate auth header, parse request body with Zod
   - Call PostService.createPost(), return 201 with created Post
   - Depends on: T028 (PostService), T031 (AuthService)
   - File: `src/app/api/posts/route.ts`
 
-- [ ] **T034** Implement GET /api/posts/[slug] (get post by slug)
+- [x] **T034** Implement GET /api/posts/[slug] (get post by slug)
   - Create `src/app/api/posts/[slug]/route.ts`
   - Return full Post object with rendered Markdown
   - Return 404 if post not found
   - Depends on: T028 (PostService)
   - File: `src/app/api/posts/[slug]/route.ts`
 
-- [ ] **T035** Implement PUT /api/posts/[slug] (update post)
+- [x] **T035** Implement PUT /api/posts/[slug] (update post)
   - Add PUT handler to `src/app/api/posts/[slug]/route.ts`
   - Validate auth, parse request body, update file
   - Return updated Post with new `updatedAt` timestamp
   - Depends on: T028 (PostService), T031 (AuthService)
   - File: `src/app/api/posts/[slug]/route.ts`
 
-- [ ] **T036** Implement DELETE /api/posts/[slug] (delete post)
+- [x] **T036** Implement DELETE /api/posts/[slug] (delete post)
   - Add DELETE handler to `src/app/api/posts/[slug]/route.ts`
   - Validate auth, delete Markdown file
   - Return 204 on success
   - Depends on: T028 (PostService), T031 (AuthService)
   - File: `src/app/api/posts/[slug]/route.ts`
 
-- [ ] **T037** Implement GET /api/about (get About Me content)
+- [x] **T037** Implement GET /api/about (get About Me content)
   - Create `src/app/api/about/route.ts`
   - Return AboutMe object with Markdown content
   - Depends on: T030 (AboutMeService)
   - File: `src/app/api/about/route.ts`
 
-- [ ] **T038** Implement PUT /api/about (update About Me)
+- [x] **T038** Implement PUT /api/about (update About Me)
   - Add PUT handler to `src/app/api/about/route.ts`
   - Validate auth, update `content/about/me.md`
   - Depends on: T030 (AboutMeService), T031 (AuthService)
   - File: `src/app/api/about/route.ts`
 
-- [ ] **T039** Implement POST /api/images/upload (upload and process image)
+- [x] **T039** Implement POST /api/images/upload (upload and process image)
   - Create `src/app/api/images/upload/route.ts`
   - Handle multipart/form-data, validate file size (≤5MB) and format
   - Generate thumbnail with Sharp, return Image object
@@ -313,7 +313,7 @@
 
 ### Middleware
 
-- [ ] **T040** Create authentication middleware for admin routes
+- [x] **T040** Create authentication middleware for admin routes
   - Create `src/middleware.ts`
   - Check `/admin/*` routes for auth cookie or Authorization header
   - Redirect to `/` if unauthorized
@@ -326,37 +326,37 @@
 
 ### Shared Components
 
-- [ ] **T041** [P] Create Header component with navigation and blog name
+- [x] **T041** [P] Create Header component with navigation and blog name
   - Create `src/components/Header.tsx`
   - Display "Drip Drop Dev" in header, navigation links (Home, About)
   - Show admin links (New Post, Edit About) only if authenticated
   - File: `src/components/Header.tsx`
 
-- [ ] **T042** [P] Create PostCard component for post list display
+- [x] **T042** [P] Create PostCard component for post list display
   - Create `src/components/PostCard.tsx`
   - Display thumbnail, title, excerpt, category badge, published date
   - Use Next.js `<Image>` component for optimization
   - File: `src/components/PostCard.tsx`
 
-- [ ] **T043** [P] Create CategoryFilter component for filtering posts
+- [x] **T043** [P] Create CategoryFilter component for filtering posts
   - Create `src/components/CategoryFilter.tsx`
   - Render buttons for "전체", "일상", "개발" with active state
   - Update URL query parameter on click
   - File: `src/components/CategoryFilter.tsx`
 
-- [ ] **T044** [P] Create PostContent component for rendering Markdown
+- [x] **T044** [P] Create PostContent component for rendering Markdown
   - Create `src/components/PostContent.tsx`
   - Use `react-markdown` with `remark-gfm` and `rehype-highlight`
   - Render images with captions using custom component
   - File: `src/components/PostContent.tsx`
 
-- [ ] **T045** [P] Create MarkdownEditor component for admin post creation/editing
+- [x] **T045** [P] Create MarkdownEditor component for admin post creation/editing
   - Create `src/components/MarkdownEditor.tsx`
   - Textarea for Markdown input, live preview with PostContent
   - Category selector, thumbnail upload button
   - File: `src/components/MarkdownEditor.tsx`
 
-- [ ] **T046** [P] Create ImageUploader component for image upload
+- [x] **T046** [P] Create ImageUploader component for image upload
   - Create `src/components/ImageUploader.tsx`
   - File input, drag-and-drop support, preview before upload
   - Call POST /api/images/upload, insert Markdown syntax on success
