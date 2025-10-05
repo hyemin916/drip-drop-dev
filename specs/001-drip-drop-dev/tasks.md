@@ -193,62 +193,62 @@
 
 ### Models & Types
 
-- [ ] **T022** [P] Create Post model with TypeScript interface and Zod schema
+- [x] **T022** [P] Create Post model with TypeScript interface and Zod schema
   - Create `src/models/Post.ts`
   - Define `Post` interface, `PostSummary`, `PostCreate`, `PostUpdate` types
   - Export `PostSchema` Zod validator
   - File: `src/models/Post.ts`
 
-- [ ] **T023** [P] Create Category model with predefined values
+- [x] **T023** [P] Create Category model with predefined values
   - Create `src/models/Category.ts`
   - Define `Category` type, `CategoryInfo` interface, `CATEGORIES` constant
   - File: `src/models/Category.ts`
 
-- [ ] **T024** [P] Create Image model with TypeScript interface
+- [x] **T024** [P] Create Image model with TypeScript interface
   - Create `src/models/Image.ts`
   - Define `Image` interface, `ImageFormat` type, `ImageSchema` Zod validator
   - File: `src/models/Image.ts`
 
-- [ ] **T025** [P] Create AboutMe model with TypeScript interface
+- [x] **T025** [P] Create AboutMe model with TypeScript interface
   - Create `src/models/AboutMe.ts`
   - Define `AboutMe` interface, `AboutMeSchema` Zod validator
   - File: `src/models/AboutMe.ts`
 
-- [ ] **T026** [P] Create BlogOwner model and AuthContext
+- [x] **T026** [P] Create BlogOwner model and AuthContext
   - Create `src/models/BlogOwner.ts`
   - Define `BlogOwner`, `AuthContext` interfaces
   - File: `src/models/BlogOwner.ts`
 
 ### Services (Business Logic)
 
-- [ ] **T027** Create MarkdownService for parsing files with frontmatter
+- [x] **T027** Create MarkdownService for parsing files with frontmatter
   - Create `src/services/MarkdownService.ts`
   - Implement `parseMarkdownFile(path)`, `extractFrontmatter(content)`
   - Use `gray-matter` library, handle Zod validation errors
   - File: `src/services/MarkdownService.ts`
 
-- [ ] **T028** Create PostService for CRUD operations on Markdown files
+- [x] **T028** Create PostService for CRUD operations on Markdown files
   - Create `src/services/PostService.ts`
   - Implement `getAllPosts()`, `getPostBySlug()`, `createPost()`, `updatePost()`, `deletePost()`
   - Use `fs/promises` for file operations, MarkdownService for parsing
   - Depends on: T022 (Post model), T027 (MarkdownService)
   - File: `src/services/PostService.ts`
 
-- [ ] **T029** Create ImageService for upload and thumbnail generation
+- [x] **T029** Create ImageService for upload and thumbnail generation
   - Create `src/services/ImageService.ts`
   - Implement `uploadImage(file)`, `generateThumbnail(imagePath)`, `getImageMetadata(path)`
   - Use `sharp` library for processing, validate format and size
   - Depends on: T024 (Image model)
   - File: `src/services/ImageService.ts`
 
-- [ ] **T030** Create AboutMeService for singleton content management
+- [x] **T030** Create AboutMeService for singleton content management
   - Create `src/services/AboutMeService.ts`
   - Implement `getAboutMe()`, `updateAboutMe(content)`
   - Handle `content/about/me.md` file operations
   - Depends on: T025 (AboutMe model), T027 (MarkdownService)
   - File: `src/services/AboutMeService.ts`
 
-- [ ] **T031** Create AuthService for environment-based authentication
+- [x] **T031** Create AuthService for environment-based authentication
   - Create `src/services/AuthService.ts`
   - Implement `verifyAdminSecret(secret)`, `getOwnerInfo()`
   - Read from `process.env.ADMIN_SECRET`, validate minimum 32 characters
