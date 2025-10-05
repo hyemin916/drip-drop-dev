@@ -95,10 +95,16 @@ When creating this spec from a user prompt:
 
 ### Requirement Completeness
 - [ ] No [NEEDS CLARIFICATION] markers remain
-- [ ] Requirements are testable and unambiguous  
+- [ ] Requirements are testable and unambiguous
 - [ ] Success criteria are measurable
 - [ ] Scope is clearly bounded
 - [ ] Dependencies and assumptions identified
+
+### Constitutional Alignment
+- [ ] User experience patterns identified (UX consistency)
+- [ ] Performance expectations specified where relevant
+- [ ] Accessibility needs documented for user-facing features
+- [ ] Incremental delivery approach considered
 
 ---
 

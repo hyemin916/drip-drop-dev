@@ -47,7 +47,34 @@
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+**Code Quality First**:
+- [ ] Complexity expectations documented (functions ≤ 50 lines, cyclomatic ≤ 10)
+- [ ] Public API contracts defined upfront
+- [ ] Code style enforcement planned (linting tools specified)
+
+**Test-Driven Development**:
+- [ ] TDD approach confirmed: tests written FIRST, approved, fail, then implement
+- [ ] Coverage target ≥ 80% for new code
+- [ ] Contract tests identified for all external interfaces
+- [ ] Integration tests planned for all user workflows
+
+**User Experience Consistency**:
+- [ ] Design patterns consistent with existing interfaces
+- [ ] Error messages planned with recovery guidance
+- [ ] Response time expectations defined (operations > 200ms)
+- [ ] Accessibility requirements specified (WCAG 2.1 AA)
+
+**Performance as a Feature**:
+- [ ] Performance targets defined (p50, p95, p99 response times)
+- [ ] Resource consumption limits specified
+- [ ] Performance regression tests planned
+- [ ] Performance budgets documented
+
+**Incremental Delivery**:
+- [ ] Feature broken into ≤ 3-day increments
+- [ ] Each increment delivers end-to-end value
+- [ ] Feature flags or dark launch strategy considered
+- [ ] Backward compatibility or migration path planned
 
 ## Project Structure
 
@@ -216,4 +243,4 @@ directories captured above]
 - [ ] Complexity deviations documented
 
 ---
-*Based on Constitution v2.1.1 - See `/memory/constitution.md`*
+*Based on Constitution v1.0.0 - See `.specify/memory/constitution.md`*
