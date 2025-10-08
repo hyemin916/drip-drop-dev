@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from 'next-view-transitions';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Container } from '@/components/Container';
@@ -156,8 +156,15 @@ export default function Header() {
                   <Link
                     href="/"
                     aria-label="Home"
-                    className="block text-sm font-medium text-zinc-800 dark:text-zinc-200"
+                    className="flex items-center gap-2 text-sm font-medium text-zinc-800 dark:text-zinc-200"
                   >
+                    <svg
+                      className="h-5 w-5 animate-drip text-teal-500 dark:text-teal-400"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                    </svg>
                     <h1 className="text-base font-bold">Drip Drop Dev</h1>
                   </Link>
                 </div>

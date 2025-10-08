@@ -1,5 +1,5 @@
 // Category type
-export type Category = '일상' | '개발';
+export type Category = 'Daily' | 'Dev';
 
 // Category info interface
 export interface CategoryInfo {
@@ -12,15 +12,15 @@ export interface CategoryInfo {
 
 // Predefined categories
 export const CATEGORIES: Record<Category, CategoryInfo> = {
-  '일상': {
-    value: '일상',
-    label: '일상',
+  'Daily': {
+    value: 'Daily',
+    label: 'Daily',
     description: 'Daily life stories and personal reflections',
     slug: 'daily-life',
   },
-  '개발': {
-    value: '개발',
-    label: '개발',
+  'Dev': {
+    value: 'Dev',
+    label: 'Dev',
     description: 'Development tutorials and technical insights',
     slug: 'development',
   },
@@ -34,5 +34,5 @@ export function getCategoryBySlug(slug: string): Category | null {
 
 // Helper function to validate category
 export function isValidCategory(value: unknown): value is Category {
-  return value === '일상' || value === '개발';
+  return value === 'Daily' || value === 'Dev';
 }

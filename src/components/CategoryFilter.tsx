@@ -2,8 +2,9 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CATEGORIES } from '@/models/Category';
+import clsx from 'clsx';
 
-const ALL_CATEGORY = '전체';
+const ALL_CATEGORY = 'All';
 
 export default function CategoryFilter() {
   const router = useRouter();
@@ -23,29 +24,43 @@ export default function CategoryFilter() {
   };
 
   return (
-    <div className="flex gap-2 mb-8">
+    <div className="flex flex-wrap gap-6 mb-8">
       <button
         onClick={() => handleCategoryClick(null)}
-        className={`px-4 py-2 rounded-full font-medium transition-colors ${
+        className={clsx(
+          'relative pb-1 text-sm font-medium transition-colors',
           !currentCategory
-            ? 'bg-drip text-white'
-            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-        }`}
+            ? 'text-zinc-900 dark:text-zinc-100'
+            : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
+        )}
       >
         {ALL_CATEGORY}
+        <span
+          className={clsx(
+            'absolute inset-x-0 -bottom-px h-0.5 bg-teal-500 dark:bg-teal-400 origin-left transition-transform duration-300 ease-out',
+            !currentCategory ? 'scale-x-100' : 'scale-x-0'
+          )}
+        />
       </button>
 
       {Object.values(CATEGORIES).map((category) => (
         <button
           key={category.slug}
           onClick={() => handleCategoryClick(category.slug)}
-          className={`px-4 py-2 rounded-full font-medium transition-colors ${
+          className={clsx(
+            'relative pb-1 text-sm font-medium transition-colors',
             currentCategory === category.slug
-              ? 'bg-drip text-white'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-          }`}
+              ? 'text-zinc-900 dark:text-zinc-100'
+              : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
+          )}
         >
           {category.label}
+          <span
+            className={clsx(
+              'absolute inset-x-0 -bottom-px h-0.5 bg-teal-500 dark:bg-teal-400 origin-left transition-transform duration-300 ease-out',
+              currentCategory === category.slug ? 'scale-x-100' : 'scale-x-0'
+            )}
+          />
         </button>
       ))}
     </div>
