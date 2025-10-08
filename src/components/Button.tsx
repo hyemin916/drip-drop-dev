@@ -24,7 +24,7 @@ export function Button({ variant = 'primary', className, ...props }: ButtonProps
     className,
   );
 
-  return typeof (props as any).href === 'undefined' ? (
+  return typeof (props as { href?: string }).href === 'undefined' ? (
     <button className={combinedClassName} {...(props as React.ComponentPropsWithoutRef<'button'>)} />
   ) : (
     <Link className={combinedClassName} {...(props as React.ComponentPropsWithoutRef<typeof Link>)} />

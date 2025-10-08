@@ -11,7 +11,7 @@ import image3 from '/public/images/photos/image-3.jpg';
 import image4 from '/public/images/photos/image-4.jpg';
 import image5 from '/public/images/photos/image-5.jpg';
 
-function SocialLink({ href, icon: Icon, ...props }: { href: string; icon: React.ComponentType<{ className?: string }>; [key: string]: any }) {
+function SocialLink({ href, icon: Icon, ...props }: { href: string; icon: React.ComponentType<{ className?: string }> } & React.ComponentPropsWithoutRef<typeof Link>) {
   return (
     <Link className="group -m-1 p-1" href={href} {...props}>
       <Icon className="h-6 w-6 fill-zinc-500 transition group-hover:fill-zinc-600 dark:fill-zinc-400 dark:group-hover:fill-zinc-300" />
