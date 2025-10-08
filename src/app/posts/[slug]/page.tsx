@@ -82,7 +82,11 @@ export default async function PostPage({ params }: { params: { slug: string } })
                   {categoryInfo.label}
                 </span>
                 <time
-                  dateTime={post.publishedAt instanceof Date ? post.publishedAt.toISOString() : post.publishedAt}
+                  dateTime={
+                    post.publishedAt instanceof Date
+                      ? post.publishedAt.toISOString()
+                      : post.publishedAt
+                  }
                   className="flex items-center text-sm text-zinc-400 dark:text-zinc-500"
                 >
                   <span className="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500 mr-3" />
@@ -104,7 +108,8 @@ export default async function PostPage({ params }: { params: { slug: string } })
                   <>
                     <span>•</span>
                     <span>
-                      Updated {new Date(post.updatedAt).toLocaleDateString('en-US')}
+                      Updated{' '}
+                      {new Date(post.updatedAt).toLocaleDateString('en-US')}
                     </span>
                   </>
                 )}
@@ -116,5 +121,5 @@ export default async function PostPage({ params }: { params: { slug: string } })
         </div>
       </div>
     </Container>
-  );
+  )
 }

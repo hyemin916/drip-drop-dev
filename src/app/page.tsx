@@ -1,9 +1,15 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import clsx from 'clsx';
 import { Container } from '@/components/Container';
 import { Card } from '@/components/Card';
 import { Button } from '@/components/Button';
 import { PostSummary } from '@/models/Post';
+import image1 from '/public/images/photos/image-1.svg';
+import image2 from '/public/images/photos/image-2.svg';
+import image3 from '/public/images/photos/image-3.svg';
+import image4 from '/public/images/photos/image-4.svg';
+import image5 from '/public/images/photos/image-5.svg';
 
 function SocialLink({ href, icon: Icon, ...props }: { href: string; icon: React.ComponentType<{ className?: string }>; [key: string]: any }) {
   return (
@@ -201,6 +207,33 @@ function Resume() {
   );
 }
 
+function Photos() {
+  const rotations = ['rotate-2', '-rotate-2', 'rotate-2', 'rotate-2', '-rotate-2'];
+
+  return (
+    <div className="mt-16 sm:mt-20">
+      <div className="-my-4 flex justify-center gap-5 overflow-hidden py-4 sm:gap-8">
+        {[image1, image2, image3, image4, image5].map((image, imageIndex) => (
+          <div
+            key={imageIndex}
+            className={clsx(
+              'relative aspect-[9/10] w-44 flex-none overflow-hidden rounded-xl bg-zinc-100 sm:w-72 sm:rounded-2xl dark:bg-zinc-800',
+              rotations[imageIndex % rotations.length],
+            )}
+          >
+            <Image
+              src={image}
+              alt=""
+              sizes="(min-width: 640px) 18rem, 11rem"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default async function Home() {
   const posts = await getRecentPosts();
 
@@ -234,7 +267,7 @@ export default async function Home() {
           </div>
         </div>
       </Container>
-
+      <Photos />
       <Container className="mt-24 md:mt-28">
         <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
           <div className="flex flex-col gap-16">
