@@ -72,22 +72,28 @@ export default async function Home({
             <div className="flex max-w-3xl flex-col space-y-16">
               {posts.map((post) => (
                 <Card as="article" key={post.id}>
-                  <Card.Eyebrow
-                    as="time"
-                    dateTime={post.publishedAt}
-                    decorate
-                  >
-                    {new Date(post.publishedAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </Card.Eyebrow>
-                  <Card.Title href={`/posts/${post.slug}`}>
-                    {post.title}
-                  </Card.Title>
-                  <Card.Description>{post.summary}</Card.Description>
-                  <Card.Cta>Read article</Card.Cta>
+                  <Card.Thumbnail
+                    src={post.thumbnail?.url}
+                    alt={post.thumbnail?.alt || post.title}
+                  />
+                  <div className="flex flex-col items-start flex-1">
+                    <Card.Eyebrow
+                      as="time"
+                      dateTime={post.publishedAt}
+                      decorate
+                    >
+                      {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </Card.Eyebrow>
+                    <Card.Title href={`/posts/${post.slug}`}>
+                      {post.title}
+                    </Card.Title>
+                    <Card.Description>{post.summary}</Card.Description>
+                    <Card.Cta>Read article</Card.Cta>
+                  </div>
                 </Card>
               ))}
             </div>

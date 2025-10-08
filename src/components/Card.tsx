@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import clsx from 'clsx'
 
 function ChevronRightIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
@@ -26,7 +27,7 @@ export function Card<T extends React.ElementType = 'div'>({
 
   return (
     <Component
-      className={clsx(className, 'group relative flex flex-col items-start')}
+      className={clsx(className, 'group relative flex gap-4')}
     >
       {children}
     </Component>
@@ -120,5 +121,27 @@ Card.Eyebrow = function CardEyebrow<T extends React.ElementType = 'p'>({
       )}
       {children}
     </Component>
+  )
+}
+
+Card.Thumbnail = function CardThumbnail({
+  src,
+  alt,
+}: {
+  src: string | null | undefined
+  alt: string
+}) {
+  const thumbnailSrc = src || '/images/placeholders/default-thumbnail.png'
+
+  return (
+    <div className="relative z-10 flex h-16 w-16 flex-none items-center justify-center rounded-lg bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 overflow-hidden">
+      <Image
+        src={thumbnailSrc}
+        alt={alt}
+        width={64}
+        height={64}
+        className="h-full w-full object-cover"
+      />
+    </div>
   )
 }
