@@ -1,47 +1,53 @@
-import { Suspense } from 'react';
+'use client';
+
+import { useState, useEffect } from 'react';
 import CategoryFilter from '@/components/CategoryFilter';
 import { PostSummary } from '@/models/Post';
 import { Container } from '@/components/Container';
 import { Card } from '@/components/Card';
 
-async function getPosts(category?: string, page = 1, limit = 10): Promise<PostSummary[]> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-  const params = new URLSearchParams({
-    page: page.toString(),
-    limit: limit.toString(),
-  });
+export default function BlogPage() {
+  const [posts, setPosts] = useState<PostSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentCategory, setCurrentCategory] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
-  if (category) {
-    params.append('category', category);
-  }
+  useEffect(() => {
+    async function fetchPosts() {
+      setLoading(true);
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: '10',
+      });
 
-  try {
-    const res = await fetch(`${baseUrl}/api/posts?${params.toString()}`, {
-      next: { revalidate: 60 }, // ISR: revalidate every 60 seconds
-    });
+      if (currentCategory) {
+        params.append('category', currentCategory);
+      }
 
-    if (!res.ok) {
-      console.error('Failed to fetch posts:', res.statusText);
-      return [];
+      try {
+        const res = await fetch(`${baseUrl}/api/posts?${params.toString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          setPosts(data.posts || []);
+        } else {
+          setPosts([]);
+        }
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+        setPosts([]);
+      } finally {
+        setLoading(false);
+      }
     }
 
-    const data = await res.json();
-    return data.posts || [];
-  } catch (error) {
-    console.error('Error fetching posts:', error);
-    return [];
-  }
-}
+    fetchPosts();
+  }, [currentCategory, page]);
 
-export default async function BlogPage({
-  searchParams,
-}: {
-  searchParams: { category?: string; page?: string };
-}) {
-  const category = searchParams.category;
-  const page = parseInt(searchParams.page || '1', 10);
-
-  const posts = await getPosts(category, page);
+  const handleCategoryChange = (category: string | null) => {
+    setCurrentCategory(category);
+    setPage(1); // Reset to page 1 when category changes
+  };
 
   return (
     <Container className="mt-16 sm:mt-32">
@@ -55,12 +61,17 @@ export default async function BlogPage({
       </header>
 
       <div className="mt-12">
-        <Suspense fallback={<div className="text-zinc-500">Loading filters...</div>}>
-          <CategoryFilter />
-        </Suspense>
+        <CategoryFilter
+          currentCategory={currentCategory}
+          onCategoryChange={handleCategoryChange}
+        />
       </div>
 
-      {posts.length === 0 ? (
+      {loading ? (
+        <div className="mt-16 text-center">
+          <p className="text-lg text-zinc-500 dark:text-zinc-400">Loading...</p>
+        </div>
+      ) : posts.length === 0 ? (
         <div className="mt-16 text-center">
           <p className="text-lg text-zinc-500 dark:text-zinc-400">No posts found.</p>
           <p className="text-sm text-zinc-400 dark:text-zinc-500 mt-2">Check back later for new content!</p>
@@ -100,29 +111,23 @@ export default async function BlogPage({
         </div>
       )}
 
-      {posts.length > 0 && (
+      {!loading && posts.length > 0 && (
         <div className="mt-16 flex justify-center gap-4">
           {page > 1 && (
-            <a
-              href={`/blog?${new URLSearchParams({
-                ...(category && { category }),
-                page: (page - 1).toString(),
-              })}`}
-              className="inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm font-medium text-zinc-900 ring-1 ring-zinc-900/10 transition hover:bg-zinc-900/5 dark:text-zinc-100 dark:ring-white/10 dark:hover:bg-white/5"
+            <button
+              onClick={() => setPage(page - 1)}
+              className="inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm font-medium text-zinc-900 ring-1 ring-zinc-900/10 transition hover:bg-zinc-900/5 dark:text-zinc-100 dark:ring-white/10 dark:hover:bg-white/5 cursor-pointer"
             >
               Previous
-            </a>
+            </button>
           )}
           {posts.length === 10 && (
-            <a
-              href={`/blog?${new URLSearchParams({
-                ...(category && { category }),
-                page: (page + 1).toString(),
-              })}`}
-              className="inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm font-medium text-zinc-900 ring-1 ring-zinc-900/10 transition hover:bg-zinc-900/5 dark:text-zinc-100 dark:ring-white/10 dark:hover:bg-white/5"
+            <button
+              onClick={() => setPage(page + 1)}
+              className="inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm font-medium text-zinc-900 ring-1 ring-zinc-900/10 transition hover:bg-zinc-900/5 dark:text-zinc-100 dark:ring-white/10 dark:hover:bg-white/5 cursor-pointer"
             >
               Next
-            </a>
+            </button>
           )}
         </div>
       )}

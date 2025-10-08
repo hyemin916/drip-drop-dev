@@ -23,13 +23,13 @@ function NavItem({
         className={clsx(
           'relative block px-3 py-2 transition',
           isActive
-            ? 'text-teal-500 dark:text-teal-400'
-            : 'hover:text-teal-500 dark:hover:text-teal-400'
+            ? 'text-drip dark:text-drip'
+            : 'hover:text-drip dark:hover:text-drip'
         )}
       >
         {children}
         {isActive && (
-          <span className="absolute inset-x-1 -bottom-px h-px bg-gradient-to-r from-teal-500/0 via-teal-500/40 to-teal-500/0 dark:from-teal-400/0 dark:via-teal-400/40 dark:to-teal-400/0" />
+          <span className="absolute inset-x-1 -bottom-px h-px bg-gradient-to-r from-drip/0 via-drip/40 to-drip/0 dark:from-drip/0 dark:via-drip/40 dark:to-drip/0" />
         )}
       </Link>
     </li>
@@ -156,7 +156,7 @@ export default function Header() {
                     className="flex items-center gap-2 text-sm font-medium text-zinc-800 dark:text-zinc-200"
                   >
                     <svg
-                      className="h-5 w-5 animate-drip text-teal-500 dark:text-teal-400"
+                      className="h-5 w-5 animate-drip text-drip"
                       viewBox="0 0 24 24"
                       fill="currentColor"
                     >

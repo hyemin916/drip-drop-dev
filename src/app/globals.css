@@ -36,19 +36,19 @@
   --text-9xl--line-height: 1;
 
   /* Custom drip-drop colors */
-  --color-drip-light: #E0F7FA;
-  --color-drip: #00BCD4;
-  --color-drip-dark: #0097A7;
-  --color-drip-50: #e6f7ff;
-  --color-drip-100: #bae7ff;
-  --color-drip-200: #91d5ff;
-  --color-drip-300: #69c0ff;
-  --color-drip-400: #40a9ff;
-  --color-drip-500: #1890ff;
-  --color-drip-600: #096dd9;
-  --color-drip-700: #0050b3;
-  --color-drip-800: #003a8c;
-  --color-drip-900: #002766;
+  --color-drip-light: #b3d9ff;
+  --color-drip: #0051c4;
+  --color-drip-dark: #003d93;
+  --color-drip-50: #e6f0ff;
+  --color-drip-100: #b3d9ff;
+  --color-drip-200: #80c2ff;
+  --color-drip-300: #4dabff;
+  --color-drip-400: #1a94ff;
+  --color-drip-500: #0051c4;
+  --color-drip-600: #0047ad;
+  --color-drip-700: #003d93;
+  --color-drip-800: #003379;
+  --color-drip-900: #00295f;
 
   --color-drop-50: #f0f9ff;
   --color-drop-100: #e0f2fe;
