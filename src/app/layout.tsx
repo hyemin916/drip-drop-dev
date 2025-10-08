@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import 'github-markdown-css/github-markdown.css'
 import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 import { ViewTransitions } from 'next-view-transitions'
 
 export const metadata: Metadata = {
@@ -31,6 +33,7 @@ export default function RootLayout({
               <main className="flex-auto">
                 {children}
               </main>
+              <Footer />
             </div>
           </div>
         </body>
