@@ -24,9 +24,10 @@ export interface PostSummary {
   slug: string;
   excerpt: string;
   category: Category;
-  publishedAt: Date;
+  publishedAt: string;
   thumbnail: Image | null;
   author: string;
+  summary: string;
 }
 
 // Create interface
@@ -57,7 +58,7 @@ export const PostSchema = z.object({
   slug: z.string().regex(/^[a-z0-9-]+$/),
   content: z.string().max(50000),
   excerpt: z.string().max(200),
-  category: z.enum(['일상', '개발']),
+  category: z.enum(['Daily', 'Dev']),
   publishedAt: z.date(),
   updatedAt: z.date().nullable(),
   thumbnail: ImageSchema.nullable(),
@@ -70,7 +71,7 @@ export const PostCreateSchema = z.object({
   slug: z.string().regex(/^[a-z0-9-]+$/),
   content: z.string().max(50000),
   excerpt: z.string().max(200),
-  category: z.enum(['일상', '개발']),
+  category: z.enum(['Daily', 'Dev']),
   thumbnail: z.string().nullable().optional(),
   author: z.string(),
 });
@@ -80,6 +81,6 @@ export const PostUpdateSchema = z.object({
   slug: z.string().regex(/^[a-z0-9-]+$/).optional(),
   content: z.string().max(50000).optional(),
   excerpt: z.string().max(200).optional(),
-  category: z.enum(['일상', '개발']).optional(),
+  category: z.enum(['Daily', 'Dev']).optional(),
   thumbnail: z.string().nullable().optional(),
 });

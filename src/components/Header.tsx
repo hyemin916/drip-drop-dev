@@ -110,10 +110,7 @@ function MobileNavigation(
   );
 }
 
-function MobileNavigationButton({
-  isOpen,
-  onClick,
-}: {
+function MobileNavigationButton({ onClick, }: {
   isOpen: boolean;
   onClick: () => void;
 }) {

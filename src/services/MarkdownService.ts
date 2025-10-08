@@ -5,7 +5,7 @@ export interface FrontmatterData {
   title: string;
   slug: string;
   excerpt: string;
-  category: '일상' | '개발';
+  category: 'Daily' | 'Dev';
   publishedAt: string;
   updatedAt?: string | null;
   thumbnail?: string | null;
@@ -42,9 +42,14 @@ export class MarkdownService {
         throw new Error('Missing required frontmatter fields: title, slug, category, publishedAt, author');
       }
 
-      // Validate category
-      if (data.category !== '일상' && data.category !== '개발') {
-        throw new Error(`Invalid category: ${data.category}. Must be "일상" or "개발"`);
+      // Map Korean category names to English
+      let category: 'Daily' | 'Dev';
+      if (data.category === '일상' || data.category === 'Daily') {
+        category = 'Daily';
+      } else if (data.category === '개발' || data.category === 'Dev') {
+        category = 'Dev';
+      } else {
+        throw new Error(`Invalid category: ${data.category}. Must be "일상", "Daily", "개발", or "Dev"`);
       }
 
       return {
@@ -52,7 +57,7 @@ export class MarkdownService {
           title: data.title,
           slug: data.slug,
           excerpt: data.excerpt || '',
-          category: data.category,
+          category,
           publishedAt: data.publishedAt,
           updatedAt: data.updatedAt || null,
           thumbnail: data.thumbnail || null,

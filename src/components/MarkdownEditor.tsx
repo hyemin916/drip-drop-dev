@@ -27,7 +27,7 @@ export default function MarkdownEditor({
   initialSlug = '',
   initialContent = '',
   initialExcerpt = '',
-  initialCategory = '개발',
+  initialCategory = 'Dev',
   initialThumbnail = null,
   onSubmit,
   submitLabel = 'Publish',

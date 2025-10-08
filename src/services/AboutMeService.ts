@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
+import matter from 'gray-matter';
 import { AboutMe, AboutMeUpdate } from '@/models/AboutMe';
 import { MarkdownService } from './MarkdownService';
 
@@ -20,15 +21,14 @@ export class AboutMeService {
         return null;
       }
 
-      const parsed = await MarkdownService.parseMarkdownFile(ABOUT_ME_PATH);
+      const fileContent = await fs.readFile(ABOUT_ME_PATH, 'utf-8');
+      const { data, content } = matter(fileContent);
 
       return {
         id: 'about-me',
-        content: parsed.content,
-        updatedAt: parsed.frontmatter.updatedAt
-          ? new Date(parsed.frontmatter.updatedAt)
-          : new Date(parsed.frontmatter.publishedAt),
-        author: parsed.frontmatter.author,
+        content: content.trim(),
+        updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
+        author: data.author || 'Unknown',
       };
     } catch (error) {
       console.error('Error getting About Me:', error);
@@ -60,7 +60,7 @@ export class AboutMeService {
       title: 'About Me',
       slug: 'about-me',
       excerpt: '',
-      category: '일상' as const,
+      category: 'Daily' as const,
       publishedAt,
       updatedAt: now.toISOString(),
       thumbnail: null,

@@ -1,5 +1,4 @@
 import { Suspense } from 'react';
-import PostCard from '@/components/PostCard';
 import CategoryFilter from '@/components/CategoryFilter';
 import { PostSummary } from '@/models/Post';
 import { Container } from '@/components/Container';

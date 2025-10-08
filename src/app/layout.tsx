@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import { Container } from '@/components/Container'
 import Header from '@/components/Header'
 import { ViewTransitions } from 'next-view-transitions'
 

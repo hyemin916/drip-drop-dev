@@ -4,20 +4,11 @@ import PostContent from '@/components/PostContent';
 import { Post } from '@/models/Post';
 import { CATEGORIES } from '@/models/Category';
 import { Container } from '@/components/Container';
+import { PostService } from '@/services/PostService';
 
 async function getPost(slug: string): Promise<Post | null> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-
   try {
-    const res = await fetch(`${baseUrl}/api/posts/${slug}`, {
-      next: { revalidate: 60 }, // ISR: revalidate every 60 seconds
-    });
-
-    if (!res.ok) {
-      return null;
-    }
-
-    return res.json();
+    return await PostService.getPostBySlug(slug);
   } catch (error) {
     console.error('Error fetching post:', error);
     return null;
@@ -25,13 +16,9 @@ async function getPost(slug: string): Promise<Post | null> {
 }
 
 export async function generateStaticParams() {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-
   try {
-    const res = await fetch(`${baseUrl}/api/posts?limit=100`);
-    const posts = await res.json();
-
-    return posts.map((post: Post) => ({
+    const { posts } = await PostService.getAllPosts({ limit: 100 });
+    return posts.map((post) => ({
       slug: post.slug,
     }));
   } catch (error) {
@@ -95,7 +82,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
                   {categoryInfo.label}
                 </span>
                 <time
-                  dateTime={post.publishedAt}
+                  dateTime={post.publishedAt instanceof Date ? post.publishedAt.toISOString() : post.publishedAt}
                   className="flex items-center text-sm text-zinc-400 dark:text-zinc-500"
                 >
                   <span className="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500 mr-3" />

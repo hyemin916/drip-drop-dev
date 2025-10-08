@@ -2,20 +2,11 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import PostContent from '@/components/PostContent';
 import { AboutMe } from '@/models/AboutMe';
+import { AboutMeService } from '@/services/AboutMeService';
 
 async function getAboutMe(): Promise<AboutMe | null> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-
   try {
-    const res = await fetch(`${baseUrl}/api/about`, {
-      next: { revalidate: 60 }, // ISR: revalidate every 60 seconds
-    });
-
-    if (!res.ok) {
-      return null;
-    }
-
-    return res.json();
+    return await AboutMeService.getAboutMe();
   } catch (error) {
     console.error('Error fetching About Me:', error);
     return null;

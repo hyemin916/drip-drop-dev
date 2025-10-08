@@ -39,7 +39,7 @@ export class PostService {
         slug: parsed.frontmatter.slug,
         excerpt: parsed.frontmatter.excerpt,
         category: parsed.frontmatter.category,
-        publishedAt: new Date(parsed.frontmatter.publishedAt),
+        publishedAt: new Date(parsed.frontmatter.publishedAt).toISOString(),
         thumbnail: parsed.frontmatter.thumbnail
           ? {
               id: '',
@@ -54,11 +54,12 @@ export class PostService {
             }
           : null,
         author: parsed.frontmatter.author,
+        summary: parsed.frontmatter.excerpt,
       });
     }
 
     // Sort by publishedAt descending (newest first)
-    posts.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
+    posts.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
 
     // Pagination
     const start = (page - 1) * limit;
