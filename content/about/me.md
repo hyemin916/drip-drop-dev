@@ -1,6 +1,11 @@
 ---
 updatedAt: "2025-10-04T10:00:00Z"
 author: "Drip Drop Dev"
+image: "/images/profile.jpg"
+email: "hello@dripdrop.dev"
+github: "https://github.com/dripdrop-dev"
+twitter: "https://twitter.com/dripdrop_dev"
+linkedin: "https://linkedin.com/in/dripdrop-dev"
 ---
 
 # About Me

@@ -29,6 +29,11 @@ export class AboutMeService {
         content: content.trim(),
         updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
         author: data.author || 'Unknown',
+        image: data.image,
+        email: data.email,
+        github: data.github,
+        twitter: data.twitter,
+        linkedin: data.linkedin,
       };
     } catch (error) {
       console.error('Error getting About Me:', error);
