@@ -5,11 +5,11 @@ import { Container } from '@/components/Container';
 import { Card } from '@/components/Card';
 import { Button } from '@/components/Button';
 import { PostSummary } from '@/models/Post';
-import image1 from '/public/images/photos/image-1.svg';
-import image2 from '/public/images/photos/image-2.svg';
-import image3 from '/public/images/photos/image-3.svg';
-import image4 from '/public/images/photos/image-4.svg';
-import image5 from '/public/images/photos/image-5.svg';
+import image1 from '/public/images/photos/image-1.jpg';
+import image2 from '/public/images/photos/image-2.jpg';
+import image3 from '/public/images/photos/image-3.jpg';
+import image4 from '/public/images/photos/image-4.jpg';
+import image5 from '/public/images/photos/image-5.jpg';
 
 function SocialLink({ href, icon: Icon, ...props }: { href: string; icon: React.ComponentType<{ className?: string }>; [key: string]: any }) {
   return (
@@ -172,7 +172,7 @@ function Resume() {
     {
       company: 'Ktown4u',
       title: 'Full Stack Developer',
-      logo: '/images/logos/ktown4u.png',
+      logo: 'https://kr.ktown4u.com/icons/ktown4u-logo.png',
       start: '2022',
       end: {
         label: 'Present',
@@ -182,9 +182,9 @@ function Resume() {
     {
       company: 'Freelance',
       title: 'Web Developer',
-      logo: '/images/logos/freelance.png',
-      start: '2020',
-      end: '2022',
+      logo: 'https://www.sen.go.kr/resources/www/image/symbol_mark.png',
+      start: '2019',
+      end: '2021',
     },
   ];
 

@@ -131,7 +131,7 @@ Card.Thumbnail = function CardThumbnail({
   src: string | null | undefined
   alt: string
 }) {
-  const thumbnailSrc = src || '/images/placeholders/default-thumbnail.png'
+  const thumbnailSrc = src || '/images/placeholders/default-thumbnail.svg'
 
   return (
     <div className="relative z-10 flex h-16 w-16 flex-none items-center justify-center rounded-lg bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 overflow-hidden">

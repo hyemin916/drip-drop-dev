@@ -60,11 +60,4 @@ linkedin: "https://linkedin.com/in/dripdrop-dev"
 - **Content**: Markdown with frontmatter
 - **Deployment**: Vercel
 
-## Get in Touch
-
-블로그에 대한 피드백이나 질문이 있으시면 언제든 연락주세요!
-
-- **GitHub**: [github.com/dripdrop-dev](https://github.com)
-- **Email**: hello@dripdrop.dev
-
 함께 성장하는 개발자가 되었으면 좋겠습니다. 감사합니다! 🚀
