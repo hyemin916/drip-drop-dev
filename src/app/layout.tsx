@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import Header from '@/components/Header'
 import { Container } from '@/components/Container'
+import Header from '@/components/Header'
 
 export const metadata: Metadata = {
   title: 'Drip Drop Dev',
