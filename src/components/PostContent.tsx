@@ -1,7 +1,8 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import rehypeHighlight from 'rehype-highlight';
+import rehypePrism from '@mapbox/rehype-prism';
 import Image from 'next/image';
+import { Prose } from './Prose';
 
 interface PostContentProps {
   content: string;
@@ -9,10 +10,10 @@ interface PostContentProps {
 
 export default function PostContent({ content }: PostContentProps) {
   return (
-    <article className="prose prose-lg max-w-none">
+    <Prose className="mt-8">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeHighlight]}
+        rehypePlugins={[rehypePrism]}
         components={{
           img: ({ src, alt, title }) => {
             if (!src) return null;
@@ -60,6 +61,6 @@ export default function PostContent({ content }: PostContentProps) {
       >
         {content}
       </ReactMarkdown>
-    </article>
+    </Prose>
   );
 }

@@ -1,27 +1,94 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@import './prism.css' layer(components);
 
-@layer base {
-  body {
-    font-feature-settings: 'rlig' 1, 'calt' 1;
-  }
+@plugin '@tailwindcss/typography';
+@config '../../typography.ts';
 
-  /* Focus styles for accessibility */
-  *:focus-visible {
-    @apply outline-none ring-2 ring-drip ring-offset-2;
-  }
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Font sizes with line heights */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.5rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.5rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.75rem;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 2rem;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 2rem;
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-4xl: 2rem;
+  --text-4xl--line-height: 2.5rem;
+  --text-5xl: 3rem;
+  --text-5xl--line-height: 3.5rem;
+  --text-6xl: 3.75rem;
+  --text-6xl--line-height: 1;
+  --text-7xl: 4.5rem;
+  --text-7xl--line-height: 1;
+  --text-8xl: 6rem;
+  --text-8xl--line-height: 1;
+  --text-9xl: 8rem;
+  --text-9xl--line-height: 1;
+
+  /* Custom drip-drop colors */
+  --color-drip-light: #E0F7FA;
+  --color-drip: #00BCD4;
+  --color-drip-dark: #0097A7;
+  --color-drip-50: #e6f7ff;
+  --color-drip-100: #bae7ff;
+  --color-drip-200: #91d5ff;
+  --color-drip-300: #69c0ff;
+  --color-drip-400: #40a9ff;
+  --color-drip-500: #1890ff;
+  --color-drip-600: #096dd9;
+  --color-drip-700: #0050b3;
+  --color-drip-800: #003a8c;
+  --color-drip-900: #002766;
+
+  --color-drop-50: #f0f9ff;
+  --color-drop-100: #e0f2fe;
+  --color-drop-200: #bae6fd;
+  --color-drop-300: #7dd3fc;
+  --color-drop-400: #38bdf8;
+  --color-drop-500: #0ea5e9;
+  --color-drop-600: #0284c7;
+  --color-drop-700: #0369a1;
+  --color-drop-800: #075985;
+  --color-drop-900: #0c4a6e;
 }
 
-@layer components {
-  /* Skip to content link for accessibility */
-  .skip-to-content {
-    @apply absolute left-0 top-0 -translate-y-full bg-drip text-white px-4 py-2 focus:translate-y-0 z-50;
-  }
+body {
+  font-feature-settings: 'rlig' 1, 'calt' 1;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-drip), 0 0 0 4px var(--color-drip-light);
+}
+
+/* Skip to content link for accessibility */
+.skip-to-content {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translateY(-100%);
+  background-color: var(--color-drip);
+  color: white;
+  padding: 0.5rem 1rem;
+  z-index: 50;
+}
+
+.skip-to-content:focus {
+  transform: translateY(0);
+}
+
+/* Text balance utility */
+.text-balance {
+  text-wrap: balance;
 }
