@@ -162,7 +162,7 @@ export default function Header() {
                     >
                       <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
                     </svg>
-                    <h1 className="text-base font-bold text-drip">Drip Drop Dev</h1>
+                    <h1 className="text-base font-bold text-zinc-800">Drip Drop Dev</h1>
                   </Link>
                 </div>
               </div>
