@@ -1,7 +1,7 @@
 import { Post, PostCreate, PostUpdate, PostSummary } from '@/models/Post';
 import { Category } from '@/models/Category';
 import { Image } from '@/models/Image';
-import { sql } from '@/lib/db';
+import { getSupabase } from '@/lib/db';
 import { MarkdownService } from './MarkdownService';
 
 // Database row types
@@ -19,16 +19,6 @@ interface PostRow {
   created_at: string;
 }
 
-interface PostSummaryRow {
-  id: number;
-  slug: string;
-  title: string;
-  excerpt: string;
-  category: string;
-  thumbnail: string | null;
-  author: string;
-  published_at: string;
-}
 
 interface ImageMatch {
   alt: string;
@@ -46,40 +36,33 @@ export class PostService {
     category?: Category;
   }): Promise<{ posts: PostSummary[]; total: number }> {
     const { page = 1, limit = 10, category } = options || {};
+    const supabase = getSupabase();
 
     // Build query
     const offset = (page - 1) * limit;
 
-    let countQuery;
-    let postsQuery;
+    let query = supabase
+      .from('posts')
+      .select('id, slug, title, excerpt, category, thumbnail, author, published_at', {
+        count: 'exact',
+      })
+      .order('published_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     if (category) {
-      countQuery = sql`SELECT COUNT(*) as count FROM posts WHERE category = ${category}`;
-      postsQuery = sql`
-        SELECT id, slug, title, excerpt, category, thumbnail, author, published_at
-        FROM posts
-        WHERE category = ${category}
-        ORDER BY published_at DESC
-        LIMIT ${limit} OFFSET ${offset}
-      `;
-    } else {
-      countQuery = sql`SELECT COUNT(*) as count FROM posts`;
-      postsQuery = sql`
-        SELECT id, slug, title, excerpt, category, thumbnail, author, published_at
-        FROM posts
-        ORDER BY published_at DESC
-        LIMIT ${limit} OFFSET ${offset}
-      `;
+      query = query.eq('category', category);
     }
 
-    const [countResult, postsResult] = await Promise.all([
-      countQuery,
-      postsQuery,
-    ]);
+    const { data, count, error } = await query;
 
-    const total = parseInt(countResult.rows[0]?.count || '0', 10);
+    if (error) {
+      console.error('Error fetching posts:', error);
+      return { posts: [], total: 0 };
+    }
 
-    const posts: PostSummary[] = (postsResult.rows as PostSummaryRow[]).map((row) => ({
+    const total = count || 0;
+
+    const posts: PostSummary[] = (data || []).map((row) => ({
       id: row.slug,
       title: row.title,
       slug: row.slug,
@@ -114,15 +97,18 @@ export class PostService {
    */
   static async getPostBySlug(slug: string): Promise<Post | null> {
     try {
-      const result = await sql`
-        SELECT * FROM posts WHERE slug = ${slug} LIMIT 1
-      `;
+      const supabase = getSupabase();
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('slug', slug)
+        .single();
 
-      if (result.rows.length === 0) {
+      if (error || !data) {
         return null;
       }
 
-      const row = result.rows[0] as PostRow;
+      const row = data as PostRow;
 
       // Extract images from content
       const imageMatches = MarkdownService.extractImagesFromMarkdown(row.content);
@@ -179,28 +165,35 @@ export class PostService {
    * Create new post
    */
   static async createPost(data: PostCreate): Promise<Post> {
+    const supabase = getSupabase();
     const now = new Date();
 
     // Check if slug already exists
-    const existing = await sql`SELECT id FROM posts WHERE slug = ${data.slug} LIMIT 1`;
-    if (existing.rows.length > 0) {
+    const { data: existing } = await supabase
+      .from('posts')
+      .select('id')
+      .eq('slug', data.slug)
+      .single();
+
+    if (existing) {
       throw new Error(`Post with slug "${data.slug}" already exists`);
     }
 
     // Insert post
-    await sql`
-      INSERT INTO posts (slug, title, content, excerpt, category, thumbnail, author, published_at)
-      VALUES (
-        ${data.slug},
-        ${data.title},
-        ${data.content},
-        ${data.excerpt},
-        ${data.category},
-        ${data.thumbnail || null},
-        ${data.author},
-        ${now.toISOString()}
-      )
-    `;
+    const { error } = await supabase.from('posts').insert({
+      slug: data.slug,
+      title: data.title,
+      content: data.content,
+      excerpt: data.excerpt,
+      category: data.category,
+      thumbnail: data.thumbnail || null,
+      author: data.author,
+      published_at: now.toISOString(),
+    });
+
+    if (error) {
+      throw new Error(`Failed to create post: ${error.message}`);
+    }
 
     // Return created post
     const post = await this.getPostBySlug(data.slug);
@@ -215,6 +208,7 @@ export class PostService {
    * Update existing post
    */
   static async updatePost(slug: string, data: PostUpdate): Promise<Post> {
+    const supabase = getSupabase();
     const existingPost = await this.getPostBySlug(slug);
     if (!existingPost) {
       throw new Error(`Post with slug "${slug}" not found`);
@@ -224,51 +218,34 @@ export class PostService {
 
     // If slug is changing, check new slug doesn't exist
     if (data.slug && data.slug !== slug) {
-      const existing = await sql`SELECT id FROM posts WHERE slug = ${data.slug} LIMIT 1`;
-      if (existing.rows.length > 0) {
+      const { data: existing } = await supabase
+        .from('posts')
+        .select('id')
+        .eq('slug', data.slug)
+        .single();
+
+      if (existing) {
         throw new Error(`Post with slug "${data.slug}" already exists`);
       }
     }
 
-    // Build update query dynamically
-    const updates: string[] = [];
-    const values: (string | null)[] = [];
-    let paramIndex = 1;
+    // Build update object
+    const updates: Record<string, string | null> = {
+      updated_at: now.toISOString(),
+    };
 
-    if (data.title !== undefined) {
-      updates.push(`title = $${paramIndex++}`);
-      values.push(data.title);
-    }
-    if (data.slug !== undefined) {
-      updates.push(`slug = $${paramIndex++}`);
-      values.push(data.slug);
-    }
-    if (data.content !== undefined) {
-      updates.push(`content = $${paramIndex++}`);
-      values.push(data.content);
-    }
-    if (data.excerpt !== undefined) {
-      updates.push(`excerpt = $${paramIndex++}`);
-      values.push(data.excerpt);
-    }
-    if (data.category !== undefined) {
-      updates.push(`category = $${paramIndex++}`);
-      values.push(data.category);
-    }
-    if (data.thumbnail !== undefined) {
-      updates.push(`thumbnail = $${paramIndex++}`);
-      values.push(data.thumbnail);
-    }
+    if (data.title !== undefined) updates.title = data.title;
+    if (data.slug !== undefined) updates.slug = data.slug;
+    if (data.content !== undefined) updates.content = data.content;
+    if (data.excerpt !== undefined) updates.excerpt = data.excerpt;
+    if (data.category !== undefined) updates.category = data.category;
+    if (data.thumbnail !== undefined) updates.thumbnail = data.thumbnail;
 
-    updates.push(`updated_at = $${paramIndex++}`);
-    values.push(now.toISOString());
+    const { error } = await supabase.from('posts').update(updates).eq('slug', slug);
 
-    values.push(slug);
-
-    await sql.query(
-      `UPDATE posts SET ${updates.join(', ')} WHERE slug = $${paramIndex}`,
-      values
-    );
+    if (error) {
+      throw new Error(`Failed to update post: ${error.message}`);
+    }
 
     const updatedSlug = data.slug || slug;
     const updatedPost = await this.getPostBySlug(updatedSlug);
@@ -283,9 +260,14 @@ export class PostService {
    * Delete post
    */
   static async deletePost(slug: string): Promise<void> {
-    const result = await sql`DELETE FROM posts WHERE slug = ${slug}`;
+    const supabase = getSupabase();
+    const { error, count } = await supabase.from('posts').delete().eq('slug', slug);
 
-    if (result.rowCount === 0) {
+    if (error) {
+      throw new Error(`Failed to delete post: ${error.message}`);
+    }
+
+    if (count === 0) {
       throw new Error(`Post with slug "${slug}" not found`);
     }
   }

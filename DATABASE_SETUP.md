@@ -1,42 +1,44 @@
 # Database Setup Guide
 
-이 프로젝트는 Vercel Postgres를 사용하여 블로그 포스트를 저장합니다.
+이 프로젝트는 Supabase를 사용하여 블로그 포스트를 저장합니다.
 
-## 1. Vercel Postgres 데이터베이스 생성
+## 1. Supabase 프로젝트 생성
 
-1. [Vercel Dashboard](https://vercel.com/dashboard) 접속
-2. 프로젝트 선택
-3. **Storage** 탭 클릭
-4. **Create Database** → **Postgres** 선택
-5. 데이터베이스 이름 입력 (예: `hamlog-db`)
-6. **Create** 클릭
+1. [Supabase Dashboard](https://supabase.com/dashboard) 접속
+2. **New Project** 클릭
+3. 프로젝트 정보 입력:
+   - Name: 프로젝트 이름 (예: `hamlog`)
+   - Database Password: 안전한 비밀번호 생성
+   - Region: 가장 가까운 지역 선택
+4. **Create new project** 클릭
+5. 프로젝트 생성 완료까지 대기 (1-2분 소요)
 
 ## 2. 환경 변수 설정
 
-데이터베이스가 생성되면 자동으로 환경 변수가 프로젝트에 추가됩니다:
+Supabase 프로젝트가 생성되면 API 설정을 가져옵니다:
 
-- `POSTGRES_URL`
-- `POSTGRES_PRISMA_URL`
-- `POSTGRES_URL_NON_POOLING`
-- `POSTGRES_USER`
-- `POSTGRES_HOST`
-- `POSTGRES_PASSWORD`
-- `POSTGRES_DATABASE`
+1. Supabase Dashboard → **Settings** → **API**
+2. 다음 정보 확인:
+   - **Project URL**: `https://xxxxx.supabase.co`
+   - **Project API keys** → **service_role** (secret)
 
 ### 로컬 개발 환경
 
 `.env.local` 파일에 환경 변수를 추가하세요:
 
 ```bash
-# Vercel Dashboard의 Storage → 데이터베이스 → .env.local 탭에서 복사
-POSTGRES_URL="..."
-POSTGRES_PRISMA_URL="..."
-POSTGRES_URL_NON_POOLING="..."
-POSTGRES_USER="..."
-POSTGRES_HOST="..."
-POSTGRES_PASSWORD="..."
-POSTGRES_DATABASE="..."
+# Supabase 설정
+NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
+SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
 ```
+
+### Vercel 환경 변수 설정
+
+1. [Vercel Dashboard](https://vercel.com/dashboard) → 프로젝트 선택
+2. **Settings** → **Environment Variables**
+3. 다음 변수 추가:
+   - `NEXT_PUBLIC_SUPABASE_URL`: Supabase 프로젝트 URL
+   - `SUPABASE_SERVICE_ROLE_KEY`: Supabase service role key
 
 ## 3. 기존 마크다운 파일 마이그레이션
 
@@ -113,8 +115,8 @@ curl -X DELETE https://your-site.com/api/posts/new-post \
 - 프로덕션에서 수정 불가 (읽기 전용 파일시스템)
 - 로컬에서만 작성 → Git push 필요
 
-### After (Database)
-- 포스트: Vercel Postgres
+### After (Supabase Database)
+- 포스트: Supabase PostgreSQL
 - 프로덕션에서 CMS처럼 작성/수정 가능
 - API 호출로 즉시 반영
 - ISR(Incremental Static Regeneration)로 성능 유지
@@ -124,17 +126,23 @@ curl -X DELETE https://your-site.com/api/posts/new-post \
 ### 마이그레이션 에러
 ```bash
 # 환경 변수 확인
-echo $POSTGRES_URL
+echo $NEXT_PUBLIC_SUPABASE_URL
+echo $SUPABASE_SERVICE_ROLE_KEY
 
 # .env.local 파일이 있는지 확인
 cat .env.local
 ```
 
 ### 데이터베이스 연결 실패
-- Vercel Dashboard에서 환경 변수가 올바른지 확인
+- Supabase Dashboard에서 프로젝트가 활성화되어 있는지 확인
+- 환경 변수가 올바른지 확인 (URL, Service Role Key)
 - `.env.local` 파일이 프로젝트 루트에 있는지 확인
 - 개발 서버 재시작
 
 ### 프로덕션에서 500 에러
 - Vercel Dashboard → Logs 확인
 - 환경 변수가 프로덕션에 설정되었는지 확인
+- Supabase Dashboard에서 데이터베이스 상태 확인
+
+### 데이터베이스 스키마 생성 필요 시
+Supabase Dashboard → **SQL Editor**에서 `db/schema.sql` 파일의 내용을 실행하세요.

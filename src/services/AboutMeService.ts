@@ -1,5 +1,5 @@
 import { AboutMe, AboutMeUpdate } from '@/models/AboutMe';
-import { sql } from '@/lib/db';
+import { getSupabase } from '@/lib/db';
 
 // Database row type
 interface AboutMeRow {
@@ -21,15 +21,18 @@ export class AboutMeService {
    */
   static async getAboutMe(): Promise<AboutMe | null> {
     try {
-      const result = await sql`
-        SELECT * FROM about_me WHERE id = 1 LIMIT 1
-      `;
+      const supabase = getSupabase();
+      const { data, error } = await supabase
+        .from('about_me')
+        .select('*')
+        .eq('id', 1)
+        .single();
 
-      if (result.rows.length === 0) {
+      if (error || !data) {
         return null;
       }
 
-      const row = result.rows[0] as AboutMeRow;
+      const row = data as AboutMeRow;
 
       return {
         id: 'about-me',
@@ -52,27 +55,43 @@ export class AboutMeService {
    * Update About Me content
    */
   static async updateAboutMe(data: AboutMeUpdate, author: string): Promise<AboutMe> {
+    const supabase = getSupabase();
     const now = new Date();
 
     try {
       // Check if row exists
-      const existing = await sql`SELECT id FROM about_me WHERE id = 1 LIMIT 1`;
+      const { data: existing } = await supabase
+        .from('about_me')
+        .select('id')
+        .eq('id', 1)
+        .single();
 
-      if (existing.rows.length === 0) {
+      if (!existing) {
         // Insert new row
-        await sql`
-          INSERT INTO about_me (id, content, author, updated_at)
-          VALUES (1, ${data.content}, ${author}, ${now.toISOString()})
-        `;
+        const { error } = await supabase.from('about_me').insert({
+          id: 1,
+          content: data.content,
+          author,
+          updated_at: now.toISOString(),
+        });
+
+        if (error) {
+          throw new Error(`Failed to create About Me: ${error.message}`);
+        }
       } else {
         // Update existing row
-        await sql`
-          UPDATE about_me
-          SET content = ${data.content},
-              author = ${author},
-              updated_at = ${now.toISOString()}
-          WHERE id = 1
-        `;
+        const { error } = await supabase
+          .from('about_me')
+          .update({
+            content: data.content,
+            author,
+            updated_at: now.toISOString(),
+          })
+          .eq('id', 1);
+
+        if (error) {
+          throw new Error(`Failed to update About Me: ${error.message}`);
+        }
       }
 
       return {
