@@ -71,30 +71,6 @@ export class MarkdownService {
   }
 
   /**
-   * Create Markdown file content with frontmatter
-   */
-  static createMarkdownContent(frontmatter: FrontmatterData, content: string): string {
-    const frontmatterData: Record<string, unknown> = {
-      title: frontmatter.title,
-      slug: frontmatter.slug,
-      excerpt: frontmatter.excerpt,
-      category: frontmatter.category,
-      publishedAt: frontmatter.publishedAt,
-      author: frontmatter.author,
-    };
-
-    if (frontmatter.updatedAt) {
-      frontmatterData.updatedAt = frontmatter.updatedAt;
-    }
-
-    if (frontmatter.thumbnail) {
-      frontmatterData.thumbnail = frontmatter.thumbnail;
-    }
-
-    return matter.stringify(content, frontmatterData);
-  }
-
-  /**
    * Extract images from Markdown content
    */
   static extractImagesFromMarkdown(content: string): Array<{

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { Category } from './Category';
-import { Image, ImageSchema } from './Image';
+import { Image } from './Image';
 
 // Post interface
 export interface Post {
@@ -50,21 +50,6 @@ export interface PostUpdate {
   category?: Category;
   thumbnail?: string | null;
 }
-
-// Zod validation schemas
-export const PostSchema = z.object({
-  id: z.string().min(1),
-  title: z.string().min(1).max(200),
-  slug: z.string().regex(/^[a-z0-9-]+$/),
-  content: z.string().max(50000),
-  excerpt: z.string().max(200),
-  category: z.enum(['Daily', 'Dev']),
-  publishedAt: z.date(),
-  updatedAt: z.date().nullable(),
-  thumbnail: ImageSchema.nullable(),
-  images: z.array(ImageSchema),
-  author: z.string(),
-});
 
 export const PostCreateSchema = z.object({
   title: z.string().min(1).max(200),

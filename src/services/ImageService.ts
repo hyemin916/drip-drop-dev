@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import sharp from 'sharp';
-import { Image, ImageFormat, isValidImageFormat } from '@/models/Image';
+import { Image, isValidImageFormat } from '@/models/Image';
 import crypto from 'crypto';
 
 const UPLOAD_DIR = path.join(process.cwd(), 'content', 'images', 'uploads');
@@ -66,72 +66,5 @@ export class ImageService {
       fileSize: buffer.length,
       uploadedAt: new Date(),
     };
-  }
-
-  /**
-   * Generate thumbnail for existing image
-   */
-  static async generateThumbnail(imagePath: string): Promise<string> {
-    const id = crypto.createHash('sha256').update(imagePath).digest('hex').substring(0, 16);
-    const thumbnailFileName = `${id}-thumb.webp`;
-    const thumbnailPath = path.join(THUMBNAIL_DIR, thumbnailFileName);
-
-    // Ensure thumbnail directory exists
-    await fs.mkdir(THUMBNAIL_DIR, { recursive: true });
-
-    // Generate thumbnail
-    await sharp(imagePath).resize(400, 300, { fit: 'cover' }).webp({ quality: 80 }).toFile(thumbnailPath);
-
-    return `/images/thumbnails/${thumbnailFileName}`;
-  }
-
-  /**
-   * Get image metadata from file path
-   */
-  static async getImageMetadata(imagePath: string): Promise<{
-    width: number;
-    height: number;
-    format: ImageFormat;
-    fileSize: number;
-  }> {
-    const buffer = await fs.readFile(imagePath);
-    const metadata = await sharp(buffer).metadata();
-
-    const formatMap: Record<string, ImageFormat> = {
-      webp: 'webp',
-      png: 'png',
-      jpeg: 'jpeg',
-      jpg: 'jpeg',
-      gif: 'gif',
-    };
-
-    return {
-      width: metadata.width || 0,
-      height: metadata.height || 0,
-      format: formatMap[metadata.format || 'webp'] || 'webp',
-      fileSize: buffer.length,
-    };
-  }
-
-  /**
-   * Delete image and its thumbnail
-   */
-  static async deleteImage(id: string): Promise<void> {
-    const uploadFiles = await fs.readdir(UPLOAD_DIR);
-    const imageFile = uploadFiles.find((f) => f.startsWith(id));
-
-    if (imageFile) {
-      await fs.unlink(path.join(UPLOAD_DIR, imageFile));
-    }
-
-    // Delete thumbnail
-    const thumbnailFile = `${id}-thumb.webp`;
-    const thumbnailPath = path.join(THUMBNAIL_DIR, thumbnailFile);
-
-    try {
-      await fs.unlink(thumbnailPath);
-    } catch {
-      // Thumbnail might not exist
-    }
   }
 }

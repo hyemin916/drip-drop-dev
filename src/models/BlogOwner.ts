@@ -5,12 +5,6 @@ export interface BlogOwner {
   isAuthenticated: boolean;
 }
 
-// Authentication context
-export interface AuthContext {
-  owner: BlogOwner | null;
-  secret: string;
-}
-
 // Helper function to create blog owner from environment
 export function createBlogOwnerFromEnv(): BlogOwner {
   return {

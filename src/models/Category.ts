@@ -31,8 +31,3 @@ export function getCategoryBySlug(slug: string): Category | null {
   const entry = Object.entries(CATEGORIES).find(([, info]) => info.slug === slug);
   return entry ? (entry[0] as Category) : null;
 }
-
-// Helper function to validate category
-export function isValidCategory(value: unknown): value is Category {
-  return value === 'Daily' || value === 'Dev';
-}
