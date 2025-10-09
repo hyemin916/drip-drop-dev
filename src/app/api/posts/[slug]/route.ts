@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { PostService } from '@/services/PostService';
 import { AuthService } from '@/services/AuthService';
 import { PostUpdateSchema } from '@/models/Post';
@@ -62,6 +63,12 @@ export async function PUT(
     // Update post
     const post = await PostService.updatePost(params.slug, validationResult.data);
 
+    // Revalidate pages
+    revalidatePath('/');
+    revalidatePath('/blog');
+    revalidatePath(`/blog/${params.slug}`);
+    revalidateTag('posts');
+
     return NextResponse.json(post);
   } catch (error) {
     console.error('Error updating post:', error);
@@ -101,6 +108,12 @@ export async function DELETE(
 
     // Delete post
     await PostService.deletePost(params.slug);
+
+    // Revalidate pages
+    revalidatePath('/');
+    revalidatePath('/blog');
+    revalidatePath(`/blog/${params.slug}`);
+    revalidateTag('posts');
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { PostService } from '@/services/PostService';
 import { AuthService } from '@/services/AuthService';
 import { PostCreateSchema } from '@/models/Post';
@@ -66,6 +67,11 @@ export async function POST(request: NextRequest) {
 
     // Create post
     const post = await PostService.createPost(validationResult.data);
+
+    // Revalidate pages
+    revalidatePath('/');
+    revalidatePath('/blog');
+    revalidateTag('posts');
 
     return NextResponse.json(post, { status: 201 });
   } catch (error) {

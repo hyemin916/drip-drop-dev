@@ -1,11 +1,40 @@
-import { promises as fs } from 'fs';
-import path from 'path';
 import { Post, PostCreate, PostUpdate, PostSummary } from '@/models/Post';
 import { Category } from '@/models/Category';
 import { Image } from '@/models/Image';
+import { sql } from '@/lib/db';
 import { MarkdownService } from './MarkdownService';
 
-const CONTENT_DIR = path.join(process.cwd(), 'content', 'posts');
+// Database row types
+interface PostRow {
+  id: number;
+  slug: string;
+  title: string;
+  content: string;
+  excerpt: string;
+  category: string;
+  thumbnail: string | null;
+  author: string;
+  published_at: string;
+  updated_at: string | null;
+  created_at: string;
+}
+
+interface PostSummaryRow {
+  id: number;
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  thumbnail: string | null;
+  author: string;
+  published_at: string;
+}
+
+interface ImageMatch {
+  alt: string;
+  url: string;
+  caption: string | null;
+}
 
 export class PostService {
   /**
@@ -18,57 +47,65 @@ export class PostService {
   }): Promise<{ posts: PostSummary[]; total: number }> {
     const { page = 1, limit = 10, category } = options || {};
 
-    // Get all post files
-    const files = await fs.readdir(CONTENT_DIR);
-    const markdownFiles = files.filter((file) => file.endsWith('.md'));
+    // Build query
+    const offset = (page - 1) * limit;
 
-    // Parse all posts
-    const posts: PostSummary[] = [];
-    for (const file of markdownFiles) {
-      const filePath = path.join(CONTENT_DIR, file);
-      const parsed = await MarkdownService.parseMarkdownFile(filePath);
+    let countQuery;
+    let postsQuery;
 
-      // Filter by category if specified
-      if (category && parsed.frontmatter.category !== category) {
-        continue;
-      }
-
-      posts.push({
-        id: parsed.frontmatter.slug,
-        title: parsed.frontmatter.title,
-        slug: parsed.frontmatter.slug,
-        excerpt: parsed.frontmatter.excerpt,
-        category: parsed.frontmatter.category,
-        publishedAt: new Date(parsed.frontmatter.publishedAt).toISOString(),
-        thumbnail: parsed.frontmatter.thumbnail
-          ? {
-              id: '',
-              url: parsed.frontmatter.thumbnail,
-              alt: parsed.frontmatter.title,
-              caption: null,
-              width: 400,
-              height: 300,
-              format: 'webp',
-              fileSize: 0,
-              uploadedAt: new Date(),
-            }
-          : null,
-        author: parsed.frontmatter.author,
-        summary: parsed.frontmatter.excerpt,
-      });
+    if (category) {
+      countQuery = sql`SELECT COUNT(*) as count FROM posts WHERE category = ${category}`;
+      postsQuery = sql`
+        SELECT id, slug, title, excerpt, category, thumbnail, author, published_at
+        FROM posts
+        WHERE category = ${category}
+        ORDER BY published_at DESC
+        LIMIT ${limit} OFFSET ${offset}
+      `;
+    } else {
+      countQuery = sql`SELECT COUNT(*) as count FROM posts`;
+      postsQuery = sql`
+        SELECT id, slug, title, excerpt, category, thumbnail, author, published_at
+        FROM posts
+        ORDER BY published_at DESC
+        LIMIT ${limit} OFFSET ${offset}
+      `;
     }
 
-    // Sort by publishedAt descending (newest first)
-    posts.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+    const [countResult, postsResult] = await Promise.all([
+      countQuery,
+      postsQuery,
+    ]);
 
-    // Pagination
-    const start = (page - 1) * limit;
-    const end = start + limit;
-    const paginatedPosts = posts.slice(start, end);
+    const total = parseInt(countResult.rows[0]?.count || '0', 10);
+
+    const posts: PostSummary[] = (postsResult.rows as PostSummaryRow[]).map((row) => ({
+      id: row.slug,
+      title: row.title,
+      slug: row.slug,
+      excerpt: row.excerpt,
+      category: row.category as Category,
+      publishedAt: new Date(row.published_at).toISOString(),
+      thumbnail: row.thumbnail
+        ? {
+            id: '',
+            url: row.thumbnail,
+            alt: row.title,
+            caption: null,
+            width: 400,
+            height: 300,
+            format: 'webp' as const,
+            fileSize: 0,
+            uploadedAt: new Date(),
+          }
+        : null,
+      author: row.author,
+      summary: row.excerpt,
+    }));
 
     return {
-      posts: paginatedPosts,
-      total: posts.length,
+      posts,
+      total,
     };
   }
 
@@ -77,41 +114,41 @@ export class PostService {
    */
   static async getPostBySlug(slug: string): Promise<Post | null> {
     try {
-      const files = await fs.readdir(CONTENT_DIR);
-      const file = files.find((f) => f.includes(slug) && f.endsWith('.md'));
+      const result = await sql`
+        SELECT * FROM posts WHERE slug = ${slug} LIMIT 1
+      `;
 
-      if (!file) {
+      if (result.rows.length === 0) {
         return null;
       }
 
-      const filePath = path.join(CONTENT_DIR, file);
-      const parsed = await MarkdownService.parseMarkdownFile(filePath);
+      const row = result.rows[0] as PostRow;
 
       // Extract images from content
-      const imageMatches = MarkdownService.extractImagesFromMarkdown(parsed.content);
-      const images: Image[] = imageMatches.map((img, index) => ({
+      const imageMatches = MarkdownService.extractImagesFromMarkdown(row.content);
+      const images: Image[] = (imageMatches as ImageMatch[]).map((img, index) => ({
         id: `${slug}-img-${index}`,
         url: img.url,
-        alt: img.alt || parsed.frontmatter.title,
+        alt: img.alt || row.title,
         caption: img.caption,
         width: 800,
         height: 600,
-        format: 'webp',
+        format: 'webp' as const,
         fileSize: 0,
         uploadedAt: new Date(),
       }));
 
       // Determine thumbnail
       let thumbnail: Image | null = null;
-      if (parsed.frontmatter.thumbnail) {
+      if (row.thumbnail) {
         thumbnail = {
           id: `${slug}-thumb`,
-          url: parsed.frontmatter.thumbnail,
-          alt: parsed.frontmatter.title,
+          url: row.thumbnail,
+          alt: row.title,
           caption: null,
           width: 400,
           height: 300,
-          format: 'webp',
+          format: 'webp' as const,
           fileSize: 0,
           uploadedAt: new Date(),
         };
@@ -120,17 +157,17 @@ export class PostService {
       }
 
       return {
-        id: parsed.frontmatter.slug,
-        title: parsed.frontmatter.title,
-        slug: parsed.frontmatter.slug,
-        content: parsed.content,
-        excerpt: parsed.frontmatter.excerpt,
-        category: parsed.frontmatter.category,
-        publishedAt: new Date(parsed.frontmatter.publishedAt),
-        updatedAt: parsed.frontmatter.updatedAt ? new Date(parsed.frontmatter.updatedAt) : null,
+        id: row.slug,
+        title: row.title,
+        slug: row.slug,
+        content: row.content,
+        excerpt: row.excerpt,
+        category: row.category as Category,
+        publishedAt: new Date(row.published_at),
+        updatedAt: row.updated_at ? new Date(row.updated_at) : null,
         thumbnail,
         images,
-        author: parsed.frontmatter.author,
+        author: row.author,
       };
     } catch (error) {
       console.error(`Error getting post by slug ${slug}:`, error);
@@ -143,37 +180,27 @@ export class PostService {
    */
   static async createPost(data: PostCreate): Promise<Post> {
     const now = new Date();
-    const datePrefix = now.toISOString().split('T')[0]; // YYYY-MM-DD
-    const fileName = `${datePrefix}-${data.slug}.md`;
-    const filePath = path.join(CONTENT_DIR, fileName);
 
-    // Check if file already exists
-    const exists = await fs
-      .access(filePath)
-      .then(() => true)
-      .catch(() => false);
-
-    if (exists) {
+    // Check if slug already exists
+    const existing = await sql`SELECT id FROM posts WHERE slug = ${data.slug} LIMIT 1`;
+    if (existing.rows.length > 0) {
       throw new Error(`Post with slug "${data.slug}" already exists`);
     }
 
-    // Create frontmatter
-    const frontmatter = {
-      title: data.title,
-      slug: data.slug,
-      excerpt: data.excerpt,
-      category: data.category,
-      publishedAt: now.toISOString(),
-      updatedAt: null,
-      thumbnail: data.thumbnail || null,
-      author: data.author,
-    };
-
-    // Create Markdown content
-    const markdownContent = MarkdownService.createMarkdownContent(frontmatter, data.content);
-
-    // Write file
-    await fs.writeFile(filePath, markdownContent, 'utf-8');
+    // Insert post
+    await sql`
+      INSERT INTO posts (slug, title, content, excerpt, category, thumbnail, author, published_at)
+      VALUES (
+        ${data.slug},
+        ${data.title},
+        ${data.content},
+        ${data.excerpt},
+        ${data.category},
+        ${data.thumbnail || null},
+        ${data.author},
+        ${now.toISOString()}
+      )
+    `;
 
     // Return created post
     const post = await this.getPostBySlug(data.slug);
@@ -193,50 +220,58 @@ export class PostService {
       throw new Error(`Post with slug "${slug}" not found`);
     }
 
-    // Find the file
-    const files = await fs.readdir(CONTENT_DIR);
-    const file = files.find((f) => f.includes(slug) && f.endsWith('.md'));
+    const now = new Date();
 
-    if (!file) {
-      throw new Error(`Post file for slug "${slug}" not found`);
+    // If slug is changing, check new slug doesn't exist
+    if (data.slug && data.slug !== slug) {
+      const existing = await sql`SELECT id FROM posts WHERE slug = ${data.slug} LIMIT 1`;
+      if (existing.rows.length > 0) {
+        throw new Error(`Post with slug "${data.slug}" already exists`);
+      }
     }
 
-    const filePath = path.join(CONTENT_DIR, file);
-    const parsed = await MarkdownService.parseMarkdownFile(filePath);
+    // Build update query dynamically
+    const updates: string[] = [];
+    const values: (string | null)[] = [];
+    let paramIndex = 1;
 
-    // Update frontmatter
-    const updatedFrontmatter = {
-      ...parsed.frontmatter,
-      ...data,
-      updatedAt: new Date().toISOString(),
-    };
+    if (data.title !== undefined) {
+      updates.push(`title = $${paramIndex++}`);
+      values.push(data.title);
+    }
+    if (data.slug !== undefined) {
+      updates.push(`slug = $${paramIndex++}`);
+      values.push(data.slug);
+    }
+    if (data.content !== undefined) {
+      updates.push(`content = $${paramIndex++}`);
+      values.push(data.content);
+    }
+    if (data.excerpt !== undefined) {
+      updates.push(`excerpt = $${paramIndex++}`);
+      values.push(data.excerpt);
+    }
+    if (data.category !== undefined) {
+      updates.push(`category = $${paramIndex++}`);
+      values.push(data.category);
+    }
+    if (data.thumbnail !== undefined) {
+      updates.push(`thumbnail = $${paramIndex++}`);
+      values.push(data.thumbnail);
+    }
 
-    const updatedContent = data.content || parsed.content;
+    updates.push(`updated_at = $${paramIndex++}`);
+    values.push(now.toISOString());
 
-    // Create updated Markdown content
-    const markdownContent = MarkdownService.createMarkdownContent(
-      updatedFrontmatter,
-      updatedContent
+    values.push(slug);
+
+    await sql.query(
+      `UPDATE posts SET ${updates.join(', ')} WHERE slug = $${paramIndex}`,
+      values
     );
 
-    // Write updated file
-    await fs.writeFile(filePath, markdownContent, 'utf-8');
-
-    // If slug changed, rename file
-    if (data.slug && data.slug !== slug) {
-      const datePrefix = file.split('-').slice(0, 3).join('-'); // Keep date prefix
-      const newFileName = `${datePrefix}-${data.slug}.md`;
-      const newFilePath = path.join(CONTENT_DIR, newFileName);
-      await fs.rename(filePath, newFilePath);
-
-      const updatedPost = await this.getPostBySlug(data.slug);
-      if (!updatedPost) {
-        throw new Error('Failed to update post');
-      }
-      return updatedPost;
-    }
-
-    const updatedPost = await this.getPostBySlug(slug);
+    const updatedSlug = data.slug || slug;
+    const updatedPost = await this.getPostBySlug(updatedSlug);
     if (!updatedPost) {
       throw new Error('Failed to update post');
     }
@@ -248,14 +283,10 @@ export class PostService {
    * Delete post
    */
   static async deletePost(slug: string): Promise<void> {
-    const files = await fs.readdir(CONTENT_DIR);
-    const file = files.find((f) => f.includes(slug) && f.endsWith('.md'));
+    const result = await sql`DELETE FROM posts WHERE slug = ${slug}`;
 
-    if (!file) {
+    if (result.rowCount === 0) {
       throw new Error(`Post with slug "${slug}" not found`);
     }
-
-    const filePath = path.join(CONTENT_DIR, file);
-    await fs.unlink(filePath);
   }
 }
