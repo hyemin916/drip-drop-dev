@@ -5,6 +5,7 @@ import CategoryFilter from '@/components/CategoryFilter';
 import { PostSummary } from '@/models/Post';
 import { Container } from '@/components/Container';
 import { Card } from '@/components/Card';
+import { getCategoryBySlug } from '@/models/Category';
 
 export default function BlogPage() {
   const [posts, setPosts] = useState<PostSummary[]>([]);
@@ -22,7 +23,11 @@ export default function BlogPage() {
       });
 
       if (currentCategory) {
-        params.append('category', currentCategory);
+        // Convert slug to actual category value
+        const categoryValue = getCategoryBySlug(currentCategory);
+        if (categoryValue) {
+          params.append('category', categoryValue);
+        }
       }
 
       try {
