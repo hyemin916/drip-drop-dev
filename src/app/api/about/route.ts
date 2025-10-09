@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { AboutMeService } from '@/services/AboutMeService';
 import { AuthService } from '@/services/AuthService';
 import { AboutMeUpdateSchema } from '@/models/AboutMe';
@@ -61,6 +62,9 @@ export async function PUT(request: NextRequest) {
       validationResult.data,
       owner.name
     );
+
+    // Revalidate About page
+    revalidatePath('/about');
 
     return NextResponse.json(aboutMe);
   } catch (error) {
