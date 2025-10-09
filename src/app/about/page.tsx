@@ -90,23 +90,28 @@ export default async function AboutPage() {
     notFound()
   }
 
+  // Check if there are any social links
+  const hasSocialLinks = about.twitter || about.github || about.linkedin || about.email
+
   return (
     <Container className="mt-16 sm:mt-32">
         <div className="grid grid-cols-1 gap-y-16 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-y-12">
-          <div className="lg:pl-20">
-            <div className="max-w-xs px-2.5 lg:max-w-none">
+          {(about.image || hasSocialLinks) && (
+            <div className="lg:pl-20">
               {about.image && (
-                <Image
-                  src={about.image}
-                  alt={about.author}
-                  width={400}
-                  height={400}
-                  className="aspect-square rotate-3 rounded-2xl bg-zinc-100 object-cover"
-                  priority
-                />
+                <div className="max-w-xs px-2.5 lg:max-w-none">
+                  <Image
+                    src={about.image}
+                    alt={about.author}
+                    width={400}
+                    height={400}
+                    className="aspect-square rotate-3 rounded-2xl bg-zinc-100 object-cover"
+                    priority
+                  />
+                </div>
               )}
             </div>
-          </div>
+          )}
           <div className="lg:order-first lg:row-span-2">
             <h1 className="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl">
               {about.author}
@@ -115,8 +120,9 @@ export default async function AboutPage() {
               <PostContent content={about.content} />
             </div>
           </div>
-          <div className="lg:pl-20">
-            <ul role="list" className="space-y-4">
+          {hasSocialLinks && (
+            <div className="lg:pl-20">
+              <ul role="list" className="space-y-4">
               {about.twitter && (
                 <li>
                   <SocialLink
@@ -148,7 +154,7 @@ export default async function AboutPage() {
                 </li>
               )}
               {about.email && (
-                <li className="mt-8 border-t border-zinc-100 pt-8">
+                <li className="mt-8 border-t border-zinc-100 pt-8 dark:border-zinc-700/40">
                   <SocialLink
                     href={`mailto:${about.email}`}
                     icon={<MailIcon className="h-4 w-4 fill-current" />}
@@ -157,8 +163,9 @@ export default async function AboutPage() {
                   </SocialLink>
                 </li>
               )}
-            </ul>
-          </div>
+              </ul>
+            </div>
+          )}
         </div>
     </Container>
   )

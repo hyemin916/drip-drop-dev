@@ -4,6 +4,9 @@ import { PostService } from '@/services/PostService';
 import { AuthService } from '@/services/AuthService';
 import { PostUpdateSchema } from '@/models/Post';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // GET /api/posts/[slug] - Get post by slug
 export async function GET(
   request: NextRequest,

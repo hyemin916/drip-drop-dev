@@ -7,6 +7,9 @@ import { CATEGORIES } from '@/models/Category';
 import { Container } from '@/components/Container';
 import { PostService } from '@/services/PostService';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 async function getPost(slug: string): Promise<Post | null> {
   try {
     return await PostService.getPostBySlug(slug);

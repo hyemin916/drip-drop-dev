@@ -26,10 +26,11 @@ export default function PostContent({ content }: PostContentProps) {
                     fill
                     className="object-contain rounded-lg"
                     sizes="(max-width: 768px) 100vw, 800px"
+                    unoptimized={src.startsWith('http')}
                   />
                 </div>
                 {title && (
-                  <figcaption className="text-center text-sm text-gray-600 mt-2">
+                  <figcaption className="text-center text-sm text-gray-600 mt-2 dark:text-gray-400">
                     {title}
                   </figcaption>
                 )}

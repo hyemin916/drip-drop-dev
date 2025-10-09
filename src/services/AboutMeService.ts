@@ -66,13 +66,22 @@ export class AboutMeService {
         .eq('id', 1)
         .single();
 
+      const updateData = {
+        content: data.content,
+        image: data.image !== undefined ? data.image : null,
+        email: data.email !== undefined ? data.email : null,
+        github: data.github !== undefined ? data.github : null,
+        twitter: data.twitter !== undefined ? data.twitter : null,
+        linkedin: data.linkedin !== undefined ? data.linkedin : null,
+        author,
+        updated_at: now.toISOString(),
+      };
+
       if (!existing) {
         // Insert new row
         const { error } = await supabase.from('about_me').insert({
           id: 1,
-          content: data.content,
-          author,
-          updated_at: now.toISOString(),
+          ...updateData,
         });
 
         if (error) {
@@ -82,11 +91,7 @@ export class AboutMeService {
         // Update existing row
         const { error } = await supabase
           .from('about_me')
-          .update({
-            content: data.content,
-            author,
-            updated_at: now.toISOString(),
-          })
+          .update(updateData)
           .eq('id', 1);
 
         if (error) {
@@ -99,6 +104,11 @@ export class AboutMeService {
         content: data.content,
         updatedAt: now,
         author,
+        image: data.image,
+        email: data.email,
+        github: data.github,
+        twitter: data.twitter,
+        linkedin: data.linkedin,
       };
     } catch (error) {
       console.error('Error updating About Me:', error);

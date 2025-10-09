@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import PostContent from './PostContent';
+import ImageUpload from './ImageUpload';
 import { CATEGORIES, Category } from '@/models/Category';
 
 interface MarkdownEditorProps {
@@ -40,6 +42,8 @@ export default function MarkdownEditor({
   const [thumbnail, setThumbnail] = useState<string | null>(initialThumbnail);
   const [showPreview, setShowPreview] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [contentImages, setContentImages] = useState<string[]>([]);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,6 +76,38 @@ export default function MarkdownEditor({
         .replace(/\s+/g, '-');
       setSlug(autoSlug);
     }
+  };
+
+  // Extract images from markdown content
+  useEffect(() => {
+    const imageRegex = /!\[.*?\]\((.*?)\)/g;
+    const matches = Array.from(content.matchAll(imageRegex));
+    const urls = matches.map(match => match[1]).filter(url => url.trim());
+    setContentImages(urls);
+  }, [content]);
+
+  // Insert image markdown at cursor position
+  const handleContentImageUpload = (url: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const imageMarkdown = `![Image](${url})`;
+
+    const newContent =
+      content.substring(0, start) +
+      imageMarkdown +
+      content.substring(end);
+
+    setContent(newContent);
+
+    // Set cursor after inserted image
+    setTimeout(() => {
+      textarea.focus();
+      const newPosition = start + imageMarkdown.length;
+      textarea.setSelectionRange(newPosition, newPosition);
+    }, 0);
   };
 
   return (
@@ -139,18 +175,67 @@ export default function MarkdownEditor({
         />
       </div>
 
+      {/* Thumbnail Selection */}
       <div>
-        <label htmlFor="thumbnail" className="block text-sm font-medium mb-2">
-          Custom Thumbnail URL (optional)
+        <label htmlFor="thumbnail" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+          Thumbnail (optional)
         </label>
-        <input
-          id="thumbnail"
-          type="text"
-          value={thumbnail || ''}
-          onChange={(e) => setThumbnail(e.target.value || null)}
-          placeholder="/images/..."
-          className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-drip focus:border-transparent"
-        />
+        {contentImages.length > 0 ? (
+          <div className="space-y-3">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              Select an image from your content or leave empty to use the first image
+            </p>
+            <div className="grid grid-cols-3 gap-3">
+              {contentImages.map((imageUrl, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => setThumbnail(imageUrl)}
+                  className={`relative aspect-video rounded-lg overflow-hidden border-2 transition-all ${
+                    thumbnail === imageUrl
+                      ? 'border-drop-500 ring-2 ring-drop-500'
+                      : 'border-zinc-300 dark:border-zinc-700 hover:border-drop-300'
+                  }`}
+                >
+                  <Image
+                    src={imageUrl}
+                    alt={`Thumbnail option ${index + 1}`}
+                    fill
+                    className="object-cover"
+                  />
+                  {thumbnail === imageUrl && (
+                    <div className="absolute inset-0 bg-drop-500/20 flex items-center justify-center">
+                      <svg
+                        className="w-8 h-8 text-drop-600"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+            {thumbnail && (
+              <button
+                type="button"
+                onClick={() => setThumbnail(null)}
+                className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400"
+              >
+                Clear selection (use first image as default)
+              </button>
+            )}
+          </div>
+        ) : (
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 italic">
+            Add images to your content to select a thumbnail
+          </p>
+        )}
       </div>
 
       <div>
@@ -167,12 +252,25 @@ export default function MarkdownEditor({
           </button>
         </div>
 
+        {/* Content Image Upload */}
+        {!showPreview && (
+          <div className="mb-3">
+            <ImageUpload
+              currentImageUrl=""
+              onImageUploaded={handleContentImageUpload}
+              label="Insert Image to Content"
+              resetAfterUpload={true}
+            />
+          </div>
+        )}
+
         {showPreview ? (
           <div className="border rounded-lg p-4 min-h-[400px] bg-gray-50">
             <PostContent content={content} />
           </div>
         ) : (
           <textarea
+            ref={textareaRef}
             id="content"
             value={content}
             onChange={(e) => setContent(e.target.value)}

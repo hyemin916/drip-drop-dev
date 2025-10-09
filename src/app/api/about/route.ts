@@ -7,13 +7,17 @@ import { AboutMeUpdateSchema } from '@/models/AboutMe';
 // GET /api/about - Get About Me content
 export async function GET() {
   try {
-    const aboutMe = await AboutMeService.getAboutMe();
+    let aboutMe = await AboutMeService.getAboutMe();
 
+    // If no About Me exists, return default empty content
     if (!aboutMe) {
-      return NextResponse.json(
-        { error: 'About Me content not found' },
-        { status: 404 }
-      );
+      const owner = AuthService.getOwnerInfo();
+      aboutMe = {
+        id: 'about-me',
+        content: '# About Me\n\nWrite about yourself here...',
+        updatedAt: new Date(),
+        author: owner.name,
+      };
     }
 
     return NextResponse.json(aboutMe);
