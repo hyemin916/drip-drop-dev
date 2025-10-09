@@ -4,6 +4,7 @@ import { Link } from 'next-view-transitions';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Container } from '@/components/Container';
+import { AuthClient } from '@/lib/auth-client';
 import clsx from 'clsx';
 
 function NavItem({
@@ -40,11 +41,10 @@ function DesktopNavigation(props: React.ComponentPropsWithoutRef<'nav'>) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const cookies = document.cookie.split(';');
-    const hasAuthCookie = cookies.some((cookie) =>
-      cookie.trim().startsWith('admin_auth=')
-    );
-    setIsAuthenticated(hasAuthCookie);
+    // Verify authentication with API
+    AuthClient.isAuthenticated().then((authenticated) => {
+      setIsAuthenticated(authenticated);
+    });
   }, []);
 
   return (
@@ -85,11 +85,10 @@ function MobileNavigation(
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const cookies = document.cookie.split(';');
-    const hasAuthCookie = cookies.some((cookie) =>
-      cookie.trim().startsWith('admin_auth=')
-    );
-    setIsAuthenticated(hasAuthCookie);
+    // Verify authentication with API
+    AuthClient.isAuthenticated().then((authenticated) => {
+      setIsAuthenticated(authenticated);
+    });
   }, []);
 
   return (

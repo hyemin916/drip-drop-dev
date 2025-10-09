@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import PostContent from '@/components/PostContent';
+import PostActions from '@/components/PostActions';
 import { Post } from '@/models/Post';
 import { CATEGORIES } from '@/models/Category';
 import { Container } from '@/components/Container';
@@ -117,6 +118,8 @@ export default async function PostPage({ params }: { params: { slug: string } })
             </header>
 
             <PostContent content={post.content} />
+
+            <PostActions slug={post.slug} />
           </article>
         </div>
       </div>
