@@ -36,30 +36,17 @@
   --text-9xl--line-height: 1;
 
   /* Custom drip-drop colors */
-  --color-drip-light: #b3d9ff;
-  --color-drip: #0051c4;
-  --color-drip-dark: #003d93;
-  --color-drip-50: #e6f0ff;
-  --color-drip-100: #b3d9ff;
-  --color-drip-200: #80c2ff;
-  --color-drip-300: #4dabff;
-  --color-drip-400: #1a94ff;
-  --color-drip-500: #0051c4;
-  --color-drip-600: #0047ad;
-  --color-drip-700: #003d93;
-  --color-drip-800: #003379;
-  --color-drip-900: #00295f;
+  --color-drip: #4A3426;
+  --color-drip-light: #6b5749;
+  --color-drip-400: #8B6F5C;
+  --color-drip-500: #6B5749;
+  --color-drip-600: #4A3426;
 
-  --color-drop-50: #f0f9ff;
-  --color-drop-100: #e0f2fe;
-  --color-drop-200: #bae6fd;
-  --color-drop-300: #7dd3fc;
-  --color-drop-400: #38bdf8;
-  --color-drop-500: #0ea5e9;
-  --color-drop-600: #0284c7;
-  --color-drop-700: #0369a1;
-  --color-drop-800: #075985;
-  --color-drop-900: #0c4a6e;
+  --color-drop: #5591aa;
+  --color-drop-400: #86b0c1;
+  --color-drop-500: #5591aa;
+  --color-drop-600: #20709c;
+
 }
 
 body {
@@ -107,4 +94,12 @@ body {
 
 .animate-drip {
   animation: drip 2s ease-in-out infinite;
+}
+
+/* Logo gradient - light to dark from top to bottom */
+.logo-gradient {
+  background: linear-gradient(180deg, var(--color-drip-400) 0%, var(--color-drip-600) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

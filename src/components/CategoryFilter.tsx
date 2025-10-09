@@ -25,7 +25,7 @@ export default function CategoryFilter({ currentCategory, onCategoryChange }: Ca
         {ALL_CATEGORY}
         <span
           className={clsx(
-            'absolute inset-x-0 -bottom-px h-0.5 bg-drip origin-left transition-transform duration-300 ease-out',
+            'absolute inset-x-0 -bottom-px h-0.5 bg-drop origin-left transition-transform duration-300 ease-out',
             !currentCategory ? 'scale-x-100' : 'scale-x-0'
           )}
         />
@@ -45,7 +45,7 @@ export default function CategoryFilter({ currentCategory, onCategoryChange }: Ca
           {category.label}
           <span
             className={clsx(
-              'absolute inset-x-0 -bottom-px h-0.5 bg-drip origin-left transition-transform duration-300 ease-out',
+              'absolute inset-x-0 -bottom-px h-0.5 bg-drop origin-left transition-transform duration-300 ease-out',
               currentCategory === category.slug ? 'scale-x-100' : 'scale-x-0'
             )}
           />

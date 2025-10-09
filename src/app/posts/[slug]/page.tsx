@@ -78,7 +78,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
           <article>
             <header className="flex flex-col">
               <div className="flex items-center gap-3 mb-6">
-                <span className="inline-flex items-center rounded-full bg-drip-500/10 px-3 py-1 text-xs font-medium text-drip-600 ring-1 ring-inset ring-drip-500/20 dark:bg-drip-400/10 dark:text-drip-400 dark:ring-drip-400/20">
+                <span className="inline-flex items-center rounded-full bg-drop-500/10 px-3 py-1 text-xs font-medium text-drop-600 ring-1 ring-inset ring-drop-500/20 dark:bg-drop-400/10 dark:text-drop-400 dark:ring-drop-400/20">
                   {categoryInfo.label}
                 </span>
                 <time

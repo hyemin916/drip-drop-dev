@@ -23,13 +23,13 @@ function NavItem({
         className={clsx(
           'relative block px-3 py-2 transition',
           isActive
-            ? 'text-drip dark:text-drip'
-            : 'hover:text-drip dark:hover:text-drip'
+            ? 'text-drop dark:text-drop'
+            : 'hover:text-drop dark:hover:text-drop'
         )}
       >
         {children}
         {isActive && (
-          <span className="absolute inset-x-1 -bottom-px h-px bg-gradient-to-r from-drip/0 via-drip/40 to-drip/0 dark:from-drip/0 dark:via-drip/40 dark:to-drip/0" />
+          <span className="absolute inset-x-1 -bottom-px h-px bg-gradient-to-r from-drop/0 via-drop/40 to-drop/0 dark:from-drop/0 dark:via-drop/40 dark:to-drop/0" />
         )}
       </Link>
     </li>
@@ -162,7 +162,7 @@ export default function Header() {
                     >
                       <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
                     </svg>
-                    <h1 className="text-base font-bold">Drip Drop Dev</h1>
+                    <h1 className="text-base font-bold text-drip">Drip Drop Dev</h1>
                   </Link>
                 </div>
               </div>
