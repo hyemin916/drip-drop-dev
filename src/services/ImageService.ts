@@ -38,14 +38,15 @@ export class ImageService {
     const id = crypto.createHash('sha256').update(buffer).digest('hex').substring(0, 16);
     const fileName = `${id}.webp`;
 
-    // Get image metadata
-    const metadata = await sharp(buffer).metadata();
-
-    // Optimize image
+    // rotate() with no args auto-corrects EXIF orientation before any processing
     const optimizedBuffer = await sharp(buffer)
+      .rotate()
       .resize(2000, 2000, { fit: 'inside', withoutEnlargement: true })
       .webp({ quality: 85 })
       .toBuffer();
+
+    // Read metadata from the processed output so width/height match the corrected orientation
+    const metadata = await sharp(optimizedBuffer).metadata();
 
     let url: string;
 
