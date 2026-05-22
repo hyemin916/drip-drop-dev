@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: 'Drip Drop Dev',
   description: 'Personal blog with development and daily life stories',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/icon.svg',
   },
 }
 

@@ -163,20 +163,17 @@ function Resume() {
   const resume: Role[] = [
     {
       company: 'Ktown4u',
-      title: 'Full Stack Developer',
+      title: 'Software Engineer',
       logo: 'https://kr.ktown4u.com/icons/ktown4u-logo.png',
-      start: '2022',
-      end: {
-        label: 'Present',
-        dateTime: new Date().getFullYear().toString(),
-      },
+      start: 'May 2022',
+      end: 'February 2026'
     },
     {
       company: 'Seoul Metropolitan Office of Education',
-      title: 'Administrative Officer',
+      title: 'Civil Servant',
       logo: 'https://www.sen.go.kr/resources/www/image/symbol_mark.png',
-      start: '2019',
-      end: '2021',
+      start: 'March 2019',
+      end: 'July 2021',
     },
   ];
 
@@ -191,10 +188,6 @@ function Resume() {
           <Role key={roleIndex} role={role} />
         ))}
       </ol>
-      <Button href="#" variant="secondary" className="group mt-6 w-full">
-        Download CV
-        <ArrowDownIcon className="h-4 w-4 stroke-zinc-400 transition group-active:stroke-zinc-600 dark:group-hover:stroke-zinc-50 dark:group-active:stroke-zinc-50" />
-      </Button>
     </div>
   );
 }
@@ -232,14 +225,10 @@ export default async function Home() {
   return (
     <>
       <Container className="mt-9">
-        <div className="max-w-2xl">
+        <div className="max-w-3xl">
           <h1 className="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
-            Software developer, blogger, and lifelong learner.
+            Fueled by caffeine, driven by curiosity.
           </h1>
-          <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
-            안녕하세요! Drip Drop Dev 블로그를 운영하는 개발자입니다.
-            웹 개발에 대한 열정과 매일의 작은 학습을 통해 성장하는 과정을 기록합니다.
-          </p>
           <div className="mt-6 flex gap-6">
             <SocialLink
               href="https://linkedin.com/in/hyemin-park9/"
