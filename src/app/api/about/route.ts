@@ -4,6 +4,8 @@ import { AboutMeService } from '@/services/AboutMeService';
 import { AuthService } from '@/services/AuthService';
 import { AboutMeUpdateSchema } from '@/models/AboutMe';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/about - Get About Me content
 export async function GET() {
   try {

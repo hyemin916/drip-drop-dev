@@ -5,6 +5,8 @@ import { AuthService } from '@/services/AuthService';
 import { PostCreateSchema } from '@/models/Post';
 import { Category } from '@/models/Category';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/posts - List posts with pagination and filtering
 export async function GET(request: NextRequest) {
   try {

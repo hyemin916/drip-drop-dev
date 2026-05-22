@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ImageService } from '@/services/ImageService';
 import { AuthService } from '@/services/AuthService';
 
+export const dynamic = 'force-dynamic';
+
 // POST /api/images/upload - Upload and process image
 export async function POST(request: NextRequest) {
   try {

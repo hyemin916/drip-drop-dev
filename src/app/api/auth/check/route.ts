@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AuthService } from '@/services/AuthService';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/auth/check - Check if user is authenticated
 export async function GET(request: NextRequest) {
   try {
