@@ -60,9 +60,6 @@ export default function BlogPage() {
         <h1 className="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
           Writing on software development, learning, and more.
         </h1>
-        <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
-          개발하면서 배운 것들, 경험한 것들, 그리고 일상의 생각들을 기록합니다.
-        </p>
       </header>
 
       <div className="mt-12">
