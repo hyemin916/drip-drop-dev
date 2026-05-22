@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 // GET /api/about - Get About Me content
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     let aboutMe = await AboutMeService.getAboutMe();
 

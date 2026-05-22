@@ -102,7 +102,7 @@ export default function MarkdownEditor({
   };
 
   const deleteDraft = (draftTitle: string) => {
-    const { [draftTitle]: _, ...updated } = drafts;
+    const updated = Object.fromEntries(Object.entries(drafts).filter(([k]) => k !== draftTitle)) as DraftMap;
     saveDrafts(updated);
     setDrafts(updated);
   };
