@@ -6,6 +6,31 @@ import PostContent from './PostContent';
 import ImageUpload from './ImageUpload';
 import { CATEGORIES, Category } from '@/models/Category';
 
+const DRAFTS_KEY = 'post-drafts';
+
+interface Draft {
+  slug: string;
+  content: string;
+  excerpt: string;
+  category: Category;
+  thumbnail: string | null;
+  savedAt: string;
+}
+
+type DraftMap = Record<string, Draft>;
+
+function loadDrafts(): DraftMap {
+  try {
+    return JSON.parse(localStorage.getItem(DRAFTS_KEY) || '{}');
+  } catch {
+    return {};
+  }
+}
+
+function saveDrafts(drafts: DraftMap) {
+  localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts));
+}
+
 interface MarkdownEditorProps {
   initialTitle?: string;
   initialSlug?: string;
@@ -43,21 +68,51 @@ export default function MarkdownEditor({
   const [showPreview, setShowPreview] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [contentImages, setContentImages] = useState<string[]>([]);
+  const [drafts, setDrafts] = useState<DraftMap>({});
+  const [showDrafts, setShowDrafts] = useState(false);
+  const [draftToast, setDraftToast] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    setDrafts(loadDrafts());
+  }, []);
+
+  const saveDraft = () => {
+    const key = title || 'Untitled';
+    const updated = {
+      ...drafts,
+      [key]: { slug, content, excerpt, category, thumbnail, savedAt: new Date().toISOString() },
+    };
+    saveDrafts(updated);
+    setDrafts(updated);
+    setDraftToast(true);
+    setTimeout(() => setDraftToast(false), 2500);
+  };
+
+  const applyDraft = (draftTitle: string) => {
+    const draft = drafts[draftTitle];
+    if (!draft) return;
+    setTitle(draftTitle);
+    setSlug(draft.slug);
+    setContent(draft.content);
+    setExcerpt(draft.excerpt);
+    setCategory(draft.category);
+    setThumbnail(draft.thumbnail);
+    setShowDrafts(false);
+  };
+
+  const deleteDraft = (draftTitle: string) => {
+    const { [draftTitle]: _, ...updated } = drafts;
+    saveDrafts(updated);
+    setDrafts(updated);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      await onSubmit({
-        title,
-        slug,
-        content,
-        excerpt,
-        category,
-        thumbnail,
-      });
+      await onSubmit({ title, slug, content, excerpt, category, thumbnail });
     } catch (error) {
       console.error('Failed to submit:', error);
       alert('Failed to save post. Please try again.');
@@ -111,7 +166,48 @@ export default function MarkdownEditor({
   };
 
   return (
+    <>
+    {draftToast && (
+      <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-lg bg-zinc-900 px-5 py-3 text-sm font-medium text-white shadow-xl dark:bg-white dark:text-zinc-900">
+        <svg className="h-4 w-4 shrink-0 text-green-400 dark:text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        Draft saved
+      </div>
+    )}
     <form onSubmit={handleSubmit} className="space-y-6">
+      {Object.keys(drafts).length > 0 && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
+          <button
+            type="button"
+            onClick={() => setShowDrafts(v => !v)}
+            className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-amber-800 dark:text-amber-200"
+          >
+            <span>{Object.keys(drafts).length} saved draft{Object.keys(drafts).length > 1 ? 's' : ''}</span>
+            <span>{showDrafts ? '▲' : '▼'}</span>
+          </button>
+          {showDrafts && (
+            <ul className="divide-y divide-amber-200 border-t border-amber-200 dark:divide-amber-800 dark:border-amber-800">
+              {Object.entries(drafts).map(([draftTitle, draft]) => (
+                <li key={draftTitle} className="flex items-center justify-between gap-3 px-4 py-2 text-sm">
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-zinc-800 dark:text-zinc-100">{draftTitle}</p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">{new Date(draft.savedAt).toLocaleString()}</p>
+                  </div>
+                  <div className="flex shrink-0 gap-3">
+                    <button type="button" onClick={() => applyDraft(draftTitle)} className="text-amber-700 hover:text-amber-900 dark:text-amber-300 dark:hover:text-amber-100 font-medium">
+                      Load
+                    </button>
+                    <button type="button" onClick={() => deleteDraft(draftTitle)} className="text-zinc-400 hover:text-red-500 dark:hover:text-red-400">
+                      Delete
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
       <div>
         <label htmlFor="title" className="block text-sm font-medium mb-2">
           Title
@@ -283,13 +379,23 @@ export default function MarkdownEditor({
         )}
       </div>
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full bg-drip text-white py-3 rounded-lg font-medium hover:bg-drip-dark transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-      >
-        {isSubmitting ? 'Saving...' : submitLabel}
-      </button>
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={saveDraft}
+          className="flex-1 border border-zinc-300 dark:border-zinc-600 text-zinc-700 dark:text-zinc-300 py-3 rounded-lg font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+        >
+          Save Draft
+        </button>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="flex-1 bg-drip text-white py-3 rounded-lg font-medium hover:bg-drip-dark transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+          {isSubmitting ? 'Saving...' : submitLabel}
+        </button>
+      </div>
     </form>
+    </>
   );
 }
